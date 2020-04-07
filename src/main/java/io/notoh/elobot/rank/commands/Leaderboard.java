@@ -24,10 +24,12 @@ public class Leaderboard extends Command {
         List<Player> players = database.getSortedPlayers();
         MessageBuilder builder = new MessageBuilder(); //avoids 2000 char limit
 
+        builder.append("```\n");
         for (Player player : players) {
             builder.append("Rank ").append(players.indexOf(player) + 1).append(": ").append(player.getName()).append(" with rating ").append(player.getRating()).append("\n");
         }
-        Queue<Message> msgs = builder.buildAll();
+        builder.append("```");
+        Queue<Message> msgs = builder.buildAll(MessageBuilder.SplitPolicy.NEWLINE);
         for (Message message : msgs) {
             msg.getChannel().sendMessage(message).queue();
         }
