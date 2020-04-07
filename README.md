@@ -1,4 +1,4 @@
-###EloBot
+### EloBot
 
 A discord bot using [JDA](https://github.com/DV8FromTheWorld/JDA/) to calculate competitive 5v5 ratings for usage
  with CSGO and CvC, using a self-modified [glicko](https://wikipedia.org/wiki/Glicko) system with rating periods set
