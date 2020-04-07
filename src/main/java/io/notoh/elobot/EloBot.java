@@ -33,6 +33,7 @@ public final class EloBot {
             handler.addCommand(new AddGame(database));
             handler.addCommand(new DeletePlayer(database));
             handler.addCommand(new Leaderboard(database));
+            handler.addCommand(new Help(database));
 
          } catch (LoginException | InterruptedException | IOException e) {
             e.printStackTrace();
