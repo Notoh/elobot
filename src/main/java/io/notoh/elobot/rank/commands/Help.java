@@ -16,7 +16,10 @@ public class Help extends Command {
                         ".\n-leaderboard gives the full leaderboard.\n-rank <player> gives the player's rank and " +
                         "rating.\n-register <player> adds a player to the rating list.\n-help is this command.\nFor " +
                 "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgame <players1-5> " +
-                "<avgopponentrating> <roundswon> <roundslost> <performances1-5> adds game data.").queue();
+                "<avgopponentrating> <roundswon> <roundslost> <performances1-5> adds game data.\n -initiateban " +
+                "initiates banning.\n -ban <map> bans a map when banning is enabled.\n -notbanned lists the maps not " +
+                "banned yet.\nAll the commands are the exact same for Valorant, just add val to the end of the " +
+                "command like -addgameval.").queue();
 
     }
 }

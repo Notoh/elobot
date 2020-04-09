@@ -1,4 +1,4 @@
-package io.notoh.elobot.rank.commands;
+package io.notoh.elobot.rank.commands.valorant;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
@@ -8,12 +8,12 @@ import io.notoh.elobot.rank.Player;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 
-public class AddGame extends Command {
+public class AddGameVal extends Command {
 
     private Database database;
 
-    public AddGame(Database database) {
-        super("addgame");
+    public AddGameVal(Database database) {
+        super("addgameval");
         this.database = database;
     }
 
@@ -31,7 +31,7 @@ public class AddGame extends Command {
         }
         String[] args = getArguments(msg);
         if(args.length < 13) {
-            msg.getChannel().sendMessage("Correct usage: -addgame <names> <average_opponent_rating>" +
+            msg.getChannel().sendMessage("Correct usage: -addgameval <names> <average_opponent_rating>" +
                     "<roundswon> <roundslost> <corresponding_performances>").queue();
             return;
         }
@@ -39,7 +39,7 @@ public class AddGame extends Command {
         String[] names = new String[5];
         System.arraycopy(args, 0, names, 0, 5);
         for(String name : names) {
-            if(database.getPlayers().get(name) == null) {
+            if(database.getValPlayers().get(name) == null) {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                 return;
             }
@@ -55,9 +55,9 @@ public class AddGame extends Command {
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < 5; i++) {
             String name = names[i];
-            Player player = database.getPlayers().get(name);
+            Player player = database.getValPlayers().get(name);
             player.playGame(avgOpponentRating, outcome, performances[i]);
-            database.updateRating(name, String.valueOf(player.getRating()),
+            database.updateValRating(name, String.valueOf(player.getRating()),
                     Util.DECIMAL_FORMAT.format(player.getDeviation()));
             builder.append("Updated player ").append(name).append(". New rating: ").append(player.getRating()).append(". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".\n");
 

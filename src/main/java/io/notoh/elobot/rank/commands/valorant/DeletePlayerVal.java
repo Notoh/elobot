@@ -1,4 +1,4 @@
-package io.notoh.elobot.rank.commands;
+package io.notoh.elobot.rank.commands.valorant;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
@@ -6,12 +6,12 @@ import io.notoh.elobot.Util;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 
-public class DeletePlayer extends Command {
+public class DeletePlayerVal extends Command {
 
     private Database database;
 
-    public DeletePlayer(Database database) {
-        super("deleteplayer");
+    public DeletePlayerVal(Database database) {
+        super("deleteplayerval");
         this.database = database;
     }
 
@@ -29,16 +29,16 @@ public class DeletePlayer extends Command {
         }
         String[] args = getArguments(msg);
         if(args.length == 0) {
-            msg.getChannel().sendMessage("Correct usage: -deleteplayer <player>").queue();
+            msg.getChannel().sendMessage("Correct usage: -deleteplayerval <player>").queue();
             return;
         }
 
         String name = args[0];
-        if(database.getPlayers().get(name) == null) {
+        if(database.getValPlayers().get(name) == null) {
             msg.getChannel().sendMessage("Player does not exist!").queue();
             return;
         }
-        database.deletePlayer(name);
+        database.deleteValPlayer(name);
         msg.getChannel().sendMessage("Deleted player " + name + ".").queue();
 
 

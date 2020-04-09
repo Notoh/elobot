@@ -1,4 +1,4 @@
-package io.notoh.elobot.rank.commands;
+package io.notoh.elobot.rank.commands.valorant;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
@@ -8,12 +8,12 @@ import net.dv8tion.jda.core.entities.Message;
 
 import java.util.List;
 
-public class Rank extends Command {
+public class RankVal extends Command {
 
     private Database database;
 
-    public Rank(Database ds) {
-        super("rank");
+    public RankVal(Database ds) {
+        super("rankval");
         this.database = ds;
     }
 
@@ -22,17 +22,17 @@ public class Rank extends Command {
         String[] args = getArguments(msg);
 
         if(args.length == 0) {
-            msg.getChannel().sendMessage("Correct usage: -rank <name>").queue();
+            msg.getChannel().sendMessage("Correct usage: -rankval <name>").queue();
             return;
         }
 
         String name = args[0];
-        Player player = database.getPlayers().get(name);
+        Player player = database.getValPlayers().get(name);
         if(player == null) {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
             return;
         }
-        List<Player> players = database.getSortedPlayers();
+        List<Player> players = database.getValSortedPlayers();
         int rank = players.indexOf(player) + 1;
         double deviation = player.getDeviation();
         int rating = player.getRating();
