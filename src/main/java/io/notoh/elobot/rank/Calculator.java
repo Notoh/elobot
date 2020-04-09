@@ -27,10 +27,8 @@ public final class Calculator {
         double g = 1/(Math.sqrt(1 + (3*q*q*deviation*deviation)/(Math.PI*Math.PI)));
         double e = 1/(1 + Math.pow(10, (g*(oldRating-opposedRating))/-400));
         double d = 1/(q*q*g*g*e*(1-e));
-        double r =
-                oldRating + (((q/(1/(deviation*deviation) + 1/(d)))*g*(outcome-e)) * (outcome > 0.5 ?
-                        Math.min(Math.log(performance)+1,
-                        1.65) : 1/Math.min(Math.log(performance)+1, 1.65)));
+        double perf = Math.pow(0.5, (outcome > 0.5 ? 1/Math.min(performance, 1.65) : Math.min(performance, 1.65)));
+        double r = oldRating + ((((q/(1/(deviation*deviation) + 1/(d)))*g*(outcome-e))) * perf);
         return new double[]{r, calcNewDeviation(deviation, d)};
     }
 
