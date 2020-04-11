@@ -22,7 +22,7 @@ public class Register extends Command {
             msg.getChannel().sendMessage("Correct usage: -register <name>").queue();
             return;
         }
-        String name = args[0];
+        String name = args[0].toLowerCase();
         ds.addPlayer(name);
         msg.getChannel().sendMessage("Player " + name + " added. You start with a rating of 1500 and " +
                 "performance deviation of " +
