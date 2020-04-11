@@ -30,33 +30,51 @@ public class AddGame extends Command {
             return;
         }
         String[] args = getArguments(msg);
-        if(args.length < 13) {
-            msg.getChannel().sendMessage("Correct usage: -addgame <names> <average_opponent_rating>" +
-                    "<roundswon> <roundslost> <corresponding_performances>").queue();
+        if(args.length < 22) {
+            msg.getChannel().sendMessage("Correct usage: -addgame <names> <roundswinner> <roundsloser> <corresponding_performances>").queue();
             return;
         }
 
-        String[] names = new String[5];
-        System.arraycopy(args, 0, names, 0, 5);
+        String[] names = new String[10];
+        System.arraycopy(args, 0, names, 0, 10);
         for(String name : names) {
             if(database.getPlayers().get(name) == null) {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                 return;
             }
         }
-        int avgOpponentRating = Integer.parseInt(args[5]);
-        int won = Integer.parseInt(args[6]);
-        int lost = Integer.parseInt(args[7]);
-        double outcome = Calculator.gamePct(won, lost);
-        double[] performances = new double[5];
+        int won = Integer.parseInt(args[10]);
+        int lost = Integer.parseInt(args[11]);
+        double outcomeWinner = Calculator.gamePct(won, lost);
+        double outcomeLoser = Calculator.gamePct(lost, won);
+        int winnerAvg = 0;
         for(int i = 0; i < 5; i++) {
-            performances[i] = Double.parseDouble(args[8+i]);
+            winnerAvg += database.getPlayers().get(names[i]).getRating();
+        }
+        winnerAvg /= 5;
+        int loserAvg = 0;
+        for(int i = 5; i < 10; i++) {
+            loserAvg += database.getPlayers().get(names[i]).getRating();
+        }
+        loserAvg /= 5;
+        double[] performances = new double[10];
+        for(int i = 0; i < 10; i++) {
+            performances[i] = Double.parseDouble(args[12+i]);
         }
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < 5; i++) {
             String name = names[i];
             Player player = database.getPlayers().get(name);
-            player.playGame(avgOpponentRating, outcome, performances[i]);
+            player.playGame(loserAvg, outcomeWinner, performances[i]);
+            database.updateRating(name, String.valueOf(player.getRating()),
+                    Util.DECIMAL_FORMAT.format(player.getDeviation()));
+            builder.append("Updated player ").append(name).append(". New rating: ").append(player.getRating()).append(". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".\n");
+
+        }
+        for(int i = 5; i < 10; i++) {
+            String name = names[i];
+            Player player = database.getPlayers().get(name);
+            player.playGame(winnerAvg, outcomeLoser, performances[i]);
             database.updateRating(name, String.valueOf(player.getRating()),
                     Util.DECIMAL_FORMAT.format(player.getDeviation()));
             builder.append("Updated player ").append(name).append(". New rating: ").append(player.getRating()).append(". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".\n");

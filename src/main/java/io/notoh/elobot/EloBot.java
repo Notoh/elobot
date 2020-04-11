@@ -37,6 +37,7 @@ public final class EloBot {
             handler.addCommand(new DeletePlayer(database));
             handler.addCommand(new Leaderboard(database));
             handler.addCommand(new Help(database));
+            handler.addCommand(new Top2(database));
 
             handler.addCommand(new Ban(database));
             handler.addCommand(new InitiateBan(database));

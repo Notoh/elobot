@@ -13,6 +13,7 @@ public class Util {
     public static final String PREFIX = "-";
     public static final int MESSAGE_CACHE_MAX = 200;
     public static final String UPDATE_ROLE = "686983926585360442";
+    public static final String ORG_ROLE = "686984072177909790";
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#####");
 
     static {
