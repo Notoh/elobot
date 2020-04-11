@@ -13,7 +13,7 @@ public class Rank extends Command {
     private Database database;
 
     public Rank(Database ds) {
-        super("rank");
+        super("rankcs");
         this.database = ds;
     }
 
@@ -22,7 +22,7 @@ public class Rank extends Command {
         String[] args = getArguments(msg);
 
         if(args.length == 0) {
-            msg.getChannel().sendMessage("Correct usage: -rank <name>").queue();
+            msg.getChannel().sendMessage("Correct usage: -rankcs <name>").queue();
             return;
         }
 

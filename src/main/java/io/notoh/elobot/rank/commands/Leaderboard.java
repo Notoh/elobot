@@ -14,7 +14,7 @@ public class Leaderboard extends Command {
     private Database database;
 
     public Leaderboard(Database ds) {
-        super("leaderboard");
+        super("leaderboardcs");
         this.database = ds;
     }
 

@@ -7,5 +7,7 @@ A discord bot using [JDA](https://github.com/DV8FromTheWorld/JDA/) to calculate 
   
   Connects to a local sql server (I use mysql) using a table called "ratings" with columns "handle" "rating" "deviation"
   
+  the csgo/valorant code is on the master branch, and the cvc code is on the cvc branch.
+  
   The code is incredibly shitty and just meant to be a bot used for 10mans, don't blame me when you read my code you
    get an aneurysm from me not caring about good practice.

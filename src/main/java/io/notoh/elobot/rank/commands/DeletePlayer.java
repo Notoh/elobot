@@ -11,7 +11,7 @@ public class DeletePlayer extends Command {
     private Database database;
 
     public DeletePlayer(Database database) {
-        super("deleteplayer");
+        super("deleteplayercs");
         this.database = database;
     }
 
@@ -29,7 +29,7 @@ public class DeletePlayer extends Command {
         }
         String[] args = getArguments(msg);
         if(args.length == 0) {
-            msg.getChannel().sendMessage("Correct usage: -deleteplayer <player>").queue();
+            msg.getChannel().sendMessage("Correct usage: -deleteplayercs <player>").queue();
             return;
         }
 

@@ -10,7 +10,7 @@ public class Register extends Command {
     public Database ds;
 
     public Register(Database ds) {
-        super("register");
+        super("registercs");
         this.ds = ds;
     }
 
@@ -19,7 +19,7 @@ public class Register extends Command {
     public void run(Message msg) {
         String[] args = getArguments(msg);
         if(args.length == 0) {
-            msg.getChannel().sendMessage("Correct usage: -register <name>").queue();
+            msg.getChannel().sendMessage("Correct usage: -registercs <name>").queue();
             return;
         }
         String name = args[0];
