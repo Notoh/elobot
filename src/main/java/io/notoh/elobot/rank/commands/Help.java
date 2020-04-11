@@ -18,8 +18,7 @@ public class Help extends Command {
                 "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgame <players1-5> " +
                 "<avgopponentrating> <roundswon> <roundslost> <performances1-5> adds game data.\n -initiateban " +
                 "initiates banning.\n -ban <map> bans a map when banning is enabled.\n -notbanned lists the maps not " +
-                "banned yet.\nAll the commands are the exact same for Valorant, just add val to the end of the " +
-                "command like -addgameval.").queue();
+                "banned yet.").queue();
 
     }
 }

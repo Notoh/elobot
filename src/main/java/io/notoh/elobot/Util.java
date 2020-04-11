@@ -12,7 +12,6 @@ public class Util {
 
     public static final String PREFIX = "-";
     public static final int MESSAGE_CACHE_MAX = 200;
-    public static final String HOME_GUILD = "655169349434474525";
     public static final String UPDATE_ROLE = "696841987927834655";
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#####");
 

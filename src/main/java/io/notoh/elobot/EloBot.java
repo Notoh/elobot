@@ -2,7 +2,6 @@ package io.notoh.elobot;
 
 
 import io.notoh.elobot.rank.commands.*;
-import io.notoh.elobot.rank.commands.valorant.*;
 import io.notoh.elobot.rank.commands.veto.Ban;
 import io.notoh.elobot.rank.commands.veto.InitiateBan;
 import io.notoh.elobot.rank.commands.veto.NotBanned;
@@ -42,12 +41,6 @@ public final class EloBot {
             handler.addCommand(new Ban(database));
             handler.addCommand(new InitiateBan(database));
             handler.addCommand(new NotBanned(database));
-
-            handler.addCommand(new AddGameVal(database));
-            handler.addCommand(new DeletePlayerVal(database));
-            handler.addCommand(new RankVal(database));
-            handler.addCommand(new LeaderboardVal(database));
-            handler.addCommand(new RegisterVal(database));
 
          } catch (LoginException | InterruptedException | IOException e) {
             e.printStackTrace();

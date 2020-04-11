@@ -14,13 +14,13 @@ public class InitiateBan extends Command {
 
     public InitiateBan(Database database) {
         super("initiateban");
-        maps.put("train", false);
-        maps.put("nuke", false);
-        maps.put("overpass", false);
-        maps.put("cache", false);
-        maps.put("mirage", false);
-        maps.put("dust2", false);
-        maps.put("inferno", false);
+        maps.put("overgrown", false);
+        maps.put("atomic", false);
+        maps.put("reserve", false);
+        maps.put("sandstorm", false);
+        maps.put("temple", false);
+        maps.put("carrier", false);
+        maps.put("alleyway", false);
     }
 
     @Override

@@ -14,8 +14,6 @@ public final class Database {
     Map<String, Message> messageCache = new HashMap<>();
     private Map<String, Player> players = new HashMap<>();
     private List<Player> sortedPlayers = new ArrayList<>();
-    private Map<String, Player> valPlayers = new HashMap<>();
-    private List<Player> valSortedPlayers = new ArrayList<>();
 
     public Database(JDA bot) {
         try {
@@ -45,18 +43,6 @@ public final class Database {
 
             rankData.close();
 
-            rankData = conn.createStatement();
-            ranks = rankData.executeQuery("SELECT * FROM valratings");
-            while(ranks.next()) {
-                String name = ranks.getString(1);
-                int rating = Integer.parseInt(ranks.getString(2));
-                double deviation = Double.parseDouble(ranks.getString(3));
-                Player player = new Player(name, rating, deviation);
-                valPlayers.put(name, player);
-                valSortedPlayers.add(player);
-            }
-            rankData.close();
-
             (new Timer()).scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -70,16 +56,6 @@ public final class Database {
                             stmt.setString(3, name);
                             stmt.execute();
                             stmt.close();
-                        }
-                        for(String name : valPlayers.keySet()) {
-                            Player player = valPlayers.get(name);
-                            PreparedStatement stmt = conn.prepareStatement("UPDATE valratings SET rating = ?, deviation = ? WHERE handle = ?");
-                            stmt.setString(1, String.valueOf(player.getRating()));
-                            stmt.setString(2, Util.DECIMAL_FORMAT.format(player.getDeviation()));
-                            stmt.setString(3, name);
-                            stmt.execute();
-                            stmt.close();
-
                         }
                     } catch(SQLException e) {
                         e.printStackTrace();
@@ -95,16 +71,6 @@ public final class Database {
                             player.updatePeriodDeviation();
                             PreparedStatement stmt =
                                     conn.prepareStatement("UPDATE ratings SET deviation = ? WHERE handle = ?");
-                            stmt.setString(1, Util.DECIMAL_FORMAT.format(player.getDeviation()));
-                            stmt.setString(2, name);
-                            stmt.execute();
-                            stmt.close();
-                        }
-                        for (String name : players.keySet()) {
-                            Player player = valPlayers.get(name);
-                            player.updatePeriodDeviation();
-                            PreparedStatement stmt =
-                                    conn.prepareStatement("UPDATE valratings SET deviation = ? WHERE handle = ?");
                             stmt.setString(1, Util.DECIMAL_FORMAT.format(player.getDeviation()));
                             stmt.setString(2, name);
                             stmt.execute();
@@ -173,49 +139,6 @@ public final class Database {
         }
     }
 
-    public void addValPlayer(String name) {
-        try {
-            Player player = new Player(name, 1500, 350.0);
-            valPlayers.put(name, player);
-            valSortedPlayers.add(player);
-            PreparedStatement stmt =
-                    conn.prepareStatement("INSERT INTO valratings VALUES (?, ?, ?)");
-            stmt.setString(1, name);
-            stmt.setString(2, String.valueOf(player.getRating()));
-            stmt.setString(3, Util.DECIMAL_FORMAT.format(player.getDeviation()));
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteValPlayer(String name) {
-        try {
-            valSortedPlayers.remove(players.get(name));
-            valPlayers.remove(name);
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM valratings WHERE handle = ?");
-            stmt.setString(1, name);
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateValRating(String name, String rating, String deviation) {
-        try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE valratings SET rating = ?, deviation = ? WHERE handle = ?");
-            stmt.setString(1, rating);
-            stmt.setString(2, deviation);
-            stmt.setString(3, name);
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<Player> getSortedPlayers() {
         Collections.sort(sortedPlayers);
         return sortedPlayers;
@@ -223,14 +146,5 @@ public final class Database {
 
     public Map<String, Player> getPlayers() {
         return players;
-    }
-
-    public Map<String, Player> getValPlayers() {
-        return valPlayers;
-    }
-
-    public List<Player> getValSortedPlayers() {
-        Collections.sort(valSortedPlayers);
-        return valSortedPlayers;
     }
 }
