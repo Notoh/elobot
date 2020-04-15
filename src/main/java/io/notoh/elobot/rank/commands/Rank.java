@@ -26,7 +26,7 @@ public class Rank extends Command {
             return;
         }
 
-        String name = args[0];
+        String name = args[0].toLowerCase();
         Player player = database.getPlayers().get(name);
         if(player == null) {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();

@@ -39,13 +39,17 @@ public class Top2 extends Command {
         Player second = null;
         for(String name : args) {
             Player player = database.getPlayers().get(name);
+            if(player == null) {
+                msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
+                return;
+            }
             int rating = player.getRating();
-            if(rating > bestRating) {
+            if(rating >= bestRating) {
                 second = best;
                 secondBest = bestRating;
                 bestRating = rating;
                 best = player;
-            } else if(rating > secondBest) {
+            } else if(rating >= secondBest) {
                 secondBest = rating;
                 second = player;
             }

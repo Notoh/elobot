@@ -33,7 +33,7 @@ public class DeletePlayer extends Command {
             return;
         }
 
-        String name = args[0];
+        String name = args[0].toLowerCase();
         if(database.getPlayers().get(name) == null) {
             msg.getChannel().sendMessage("Player does not exist!").queue();
             return;

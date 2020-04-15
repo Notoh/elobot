@@ -36,7 +36,9 @@ public class AddGame extends Command {
         }
 
         String[] names = new String[10];
-        System.arraycopy(args, 0, names, 0, 10);
+        for(int i = 0; i < 10; i++) {
+            names[i] = args[i].toLowerCase();
+        }
         for(String name : names) {
             if(database.getPlayers().get(name) == null) {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();

@@ -2,6 +2,7 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
+import io.notoh.elobot.rank.Player;
 import net.dv8tion.jda.core.entities.Message;
 
 
@@ -23,6 +24,11 @@ public class Register extends Command {
             return;
         }
         String name = args[0].toLowerCase();
+        Player player = ds.getPlayers().get(name);
+        if(player != null) {
+            msg.getChannel().sendMessage("Player " + name + " already exists!").queue();
+            return;
+        }
         ds.addPlayer(name);
         msg.getChannel().sendMessage("Player " + name + " added. You start with a rating of 1500 and " +
                 "performance deviation of " +
