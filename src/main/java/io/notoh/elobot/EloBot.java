@@ -34,10 +34,16 @@ public final class EloBot {
             handler.addCommand(new Register(database));
             handler.addCommand(new CalcAvg(database));
             handler.addCommand(new AddGame(database));
+            handler.addCommand(new AddGameExport(database));
             handler.addCommand(new DeletePlayer(database));
             handler.addCommand(new Leaderboard(database));
             handler.addCommand(new Help(database));
             handler.addCommand(new Top2(database));
+            handler.addCommand(new ChangeName(database));
+
+            handler.addCommand(new Lb(database));
+            handler.addCommand(new R(database));
+            handler.addCommand(new T2(database));
 
             handler.addCommand(new Ban(database));
             handler.addCommand(new InitiateBan(database));

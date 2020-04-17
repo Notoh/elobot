@@ -5,12 +5,11 @@ import io.notoh.elobot.Database;
 import io.notoh.elobot.rank.Player;
 import net.dv8tion.jda.core.entities.Message;
 
-
-public class Top2 extends Command {
+public class T2 extends Command {
     private Database database;
 
-    public Top2(Database database) {
-        super("top2");
+    public T2(Database database) {
+        super("t2");
         this.database = database;
     }
 
@@ -18,7 +17,7 @@ public class Top2 extends Command {
     public void run(Message msg) {
         String[] args = getArguments(msg);
         if(args.length < 10) {
-            msg.getChannel().sendMessage("Usage: -top2 <ten players>").queue();
+            msg.getChannel().sendMessage("Usage: -t2 <ten players>").queue();
             return;
         }
         int bestRating = Integer.MIN_VALUE;

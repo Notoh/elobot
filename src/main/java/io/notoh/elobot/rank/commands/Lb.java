@@ -8,13 +8,14 @@ import net.dv8tion.jda.core.entities.Message;
 
 import java.util.List;
 
-public class Leaderboard extends Command {
+public class Lb extends Command {
 
     private Database database;
 
-    public Leaderboard(Database ds) {
-        super("leaderboard");
-        this.database = ds;
+    public Lb(Database database) {
+        super("lb");
+        this.database = database;
+
     }
 
     @Override
@@ -49,6 +50,4 @@ public class Leaderboard extends Command {
         builder.append("```");
         msg.getChannel().sendMessage(builder.build()).queue();
     }
-
-
 }

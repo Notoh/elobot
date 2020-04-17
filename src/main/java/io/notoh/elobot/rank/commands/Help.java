@@ -20,7 +20,12 @@ public class Help extends Command {
                         ".\n-leaderboard [page] gives the full leaderboard.\n-rank <player> gives the player's rank " +
                 "and" +
                 " " +
-                        "rating.\n-register <player> adds a player to the rating list.\n-help is this command.\nFor " +
+                        "rating.\n-register <player> adds a player to the rating list.\n-changename <old> <new> " +
+                "changes a player's name in the system.\n-addgameexport <exact_podcrash_export> adds a game from a " +
+                "podcrash export." +
+                "-help is " +
+                "this command" +
+                ".\nFor " +
                 "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgame <names> " +
                 "<roundswinner> <roundsloser> <corresponding_performances> adds game data.```").queue();
 

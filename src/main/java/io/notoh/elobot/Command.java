@@ -14,10 +14,10 @@ public abstract class Command {
 
     public String[] getArguments(Message msg) {
         int cut = msg.getContentRaw().indexOf(' ') + 1;
-        if(cut == 0) {
+        if (cut == 0) {
             return new String[]{};
         }
-        return msg.getContentRaw().substring(cut).split(" ");
+        return msg.getContentRaw().substring(cut).split("\\s+");
     }
 
 }

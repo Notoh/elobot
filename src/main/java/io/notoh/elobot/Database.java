@@ -139,6 +139,22 @@ public final class Database {
         }
     }
 
+    public void changeName(String old, String newName) {
+        try {
+            Player player = players.get(old);
+            players.remove(old);
+            sortedPlayers.remove(player);
+            Player newPlayer = new Player(newName, player.getRating(), player.getDeviation());
+            players.put(newName, newPlayer);
+            sortedPlayers.add(newPlayer);
+            PreparedStatement stmt = conn.prepareStatement("UPDATE RATINGS SET handle = ? WHERE handle = ?");
+            stmt.setString(1, newName);
+            stmt.setString(2, old);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Player> getSortedPlayers() {
         Collections.sort(sortedPlayers);
         return sortedPlayers;
