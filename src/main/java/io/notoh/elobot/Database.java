@@ -216,6 +216,38 @@ public final class Database {
         }
     }
 
+    public void changeName(String old, String newName) {
+        try {
+            Player player = players.get(old);
+            players.remove(old);
+            sortedPlayers.remove(player);
+            Player newPlayer = new Player(newName, player.getRating(), player.getDeviation());
+            players.put(newName, newPlayer);
+            sortedPlayers.add(newPlayer);
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
+            stmt.setString(1, newName);
+            stmt.setString(2, old);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeValName(String old, String newName) {
+        try {
+            Player player = valPlayers.get(old);
+            valPlayers.remove(old);
+            valSortedPlayers.remove(player);
+            Player newPlayer = new Player(newName, player.getRating(), player.getDeviation());
+            valPlayers.put(newName, newPlayer);
+            valSortedPlayers.add(newPlayer);
+            PreparedStatement stmt = conn.prepareStatement("UPDATE valratings SET handle = ? WHERE handle = ?");
+            stmt.setString(1, newName);
+            stmt.setString(2, old);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Player> getSortedPlayers() {
         Collections.sort(sortedPlayers);
         return sortedPlayers;

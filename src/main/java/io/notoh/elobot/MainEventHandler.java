@@ -34,7 +34,7 @@ public class MainEventHandler extends ListenerAdapter {
         int index = msg.getContentRaw().indexOf(' ');
         String commandName = msg.getContentRaw().substring(Util.PREFIX.length(), index < 0 ?
                 msg.getContentRaw().length() : index).toLowerCase();
-        if (!commands.containsKey(commandName)) {
+        if (!commands.containsKey(commandName) || !msg.getContentRaw().startsWith("-")) {
             return;
         }
         commands.get(commandName).run(msg);

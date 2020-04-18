@@ -39,6 +39,7 @@ public final class EloBot {
             handler.addCommand(new Leaderboard(database));
             handler.addCommand(new Help(database));
             handler.addCommand(new Top2(database));
+            handler.addCommand(new ChangeName(database));
 
             handler.addCommand(new Ban(database));
             handler.addCommand(new InitiateBan(database));
@@ -50,7 +51,7 @@ public final class EloBot {
             handler.addCommand(new LeaderboardVal(database));
             handler.addCommand(new RegisterVal(database));
             handler.addCommand(new Top2Val(database));
-
+            handler.addCommand(new ChangeValName(database));
          } catch (LoginException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
