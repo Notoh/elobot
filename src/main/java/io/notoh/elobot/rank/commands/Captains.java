@@ -22,9 +22,9 @@ public class Captains extends Command {
             msg.getChannel().sendMessage("Usage: -captains <ten players>").queue();
             return;
         }
-        double bestRating = Double.MIN_VALUE;
+        double bestRating = -10000000;
         PlayerWrapper best = null;
-        double secondBest = Double.MIN_VALUE;
+        double secondBest = -10000000;
         PlayerWrapper second = null;
         for(String name : args) {
             PlayerWrapper player = database.getPlayers().get(name.toLowerCase());
@@ -67,7 +67,8 @@ public class Captains extends Command {
             }
         }
         if(best == null || second == null) {
-            msg.getChannel().sendMessage("An error occurred.").queue();
+            msg.getChannel().sendMessage("An error occurred. ID " + (best == null ? "debug1" :
+                    "debug2")).queue();
             return;
         }
         msg.getChannel().sendMessage("Captains are " + best.getPlayer().getId() + " and " + second.getPlayer().getId() + ".").queue();
