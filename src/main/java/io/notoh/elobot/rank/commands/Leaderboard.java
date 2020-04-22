@@ -2,7 +2,8 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import io.notoh.elobot.rank.Player;
+import io.notoh.elobot.Util;
+import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
@@ -31,7 +32,7 @@ public class Leaderboard extends Command {
             return;
         }
 
-        List<Player> players = database.getSortedPlayers();
+        List<PlayerWrapper> players = database.getSortedPlayers();
         if(players.size() < 1 + ((page-1) * 40)) { //page 2 needs at least 41 players
             msg.getChannel().sendMessage("Too large a page!").queue();
             return;
@@ -43,8 +44,9 @@ public class Leaderboard extends Command {
             if(i > players.size() - 1) {
                 break;
             }
-            Player player = players.get(i);
-            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getName()).append(" - ").append(player.getRating()).append("\n");
+            PlayerWrapper player = players.get(i);
+            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getPlayer().getId()).append(" -" +
+                    " ").append(Util.DECIMAL_FORMAT.format(player.getRating().getConservativeRating())).append("\n");
         }
         builder.append("```");
         msg.getChannel().sendMessage(builder.build()).queue();

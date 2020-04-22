@@ -4,9 +4,12 @@ import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.Calculator;
-import io.notoh.elobot.rank.Player;
+import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddGameExport extends Command {
 
@@ -38,8 +41,8 @@ public class AddGameExport extends Command {
         int roundsB = Integer.parseInt(args[33]);
         int won = Math.max(roundsA, roundsB);
         int lost = Math.min(roundsA, roundsB);
-        double outcomeLosers = Calculator.gamePct(lost, won);
-        double outcomeWinners = Calculator.gamePct(won, lost);
+        //double outcomeLosers = Calculator.gamePct(lost, won);
+        //double outcomeWinners = Calculator.gamePct(won, lost);
         String[] namesWon = new String[5];
         String[] namesLost = new String[5];
         int startIndexWin = won == roundsA ? 7 : 34;
@@ -54,18 +57,18 @@ public class AddGameExport extends Command {
             namesLost[count] = args[i].toLowerCase();
             count++;
         }
-        double[] perfWinners = new double[5];
-        double[] perfLosers = new double[5];
-        startIndexWin = won == roundsA ? 11 : 38;
-        startIndexLoss = won == roundsA ? 38 : 11;
+        String[] killsWinners = new String[5];
+        String[] killsLosers = new String[5];
+        startIndexWin = won == roundsA ? 8 : 35;
+        startIndexLoss = won == roundsA ? 8 : 35;
         count = 0;
-        for(int i = startIndexWin; i < startIndexWin+21; i+=5) {
-            perfWinners[count] = Double.parseDouble(args[i]);
+        for(int i = startIndexWin; i < startIndexWin+24; i+=5) {
+            killsWinners[count] = args[i];
             count++;
         }
         count = 0;
-        for(int i = startIndexLoss; i < startIndexLoss+21; i+=5) {
-            perfLosers[count] = Double.parseDouble(args[i]);
+        for(int i = startIndexLoss; i < startIndexLoss+24; i+=5) {
+            killsLosers[count] = args[i];
             count++;
         }
         for(String name : namesWon) {
@@ -80,32 +83,46 @@ public class AddGameExport extends Command {
                 return;
             }
         }
-        Player[] winners = new Player[5];
-        Player[] losers = new Player[5];
+        int[] killsWon = new int[5];
+        int[] deathsWon = new int[5];
+        int[] killsLost = new int[5];
+        int[] deathsLost = new int[5];
+
         for(int i = 0; i < 5; i++) {
-            winners[i] = database.getPlayers().get(namesWon[i]);
+            killsWon[i] = Integer.parseInt(killsWinners[i].split("-")[0]);
+            deathsWon[i] = Integer.parseInt(killsWinners[i].split("-")[1]);
         }
         for(int i = 0; i < 5; i++) {
-            losers[i] = database.getPlayers().get(namesLost[i]);
+            killsLost[i] = Integer.parseInt(killsLosers[i].split("-")[0]);
+            deathsLost[i] = Integer.parseInt(killsLosers[i].split("-")[1]);
         }
-        int avgWinner = Calculator.calcAvg(winners);
-        int avgLoser = Calculator.calcAvg(losers);
+        List<PlayerWrapper> winners = new ArrayList<>();
+        List<PlayerWrapper> losers = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            winners.add(database.getPlayers().get(namesWon[i]));
+            winners.get(i).addKills(killsWon[i]);
+            winners.get(i).addDeaths(deathsWon[i]);
+            winners.get(i).addWin();
+        }
+        for(int i = 0; i < 5; i++) {
+            losers.add(database.getPlayers().get(namesLost[i]));
+            losers.get(i).addKills(killsLost[i]);
+            losers.get(i).addDeaths(deathsLost[i]);
+            losers.get(i).addLoss();
+        }
+        Calculator.playGame(winners, losers);
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < 5; i++) {
-            Player player = winners[i];
-            player.playGame(avgLoser, outcomeWinners, perfWinners[i]);
-            database.updateRating(namesWon[i], String.valueOf(player.getRating()),
-                    Util.DECIMAL_FORMAT.format(player.getDeviation()));
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating()).append(
-                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".\n");
+            PlayerWrapper player = winners.get(i);
+            database.updateRating(player);
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
+                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation())).append(". New mean: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getMean())).append(".\n");
         }
         for(int i = 0; i < 5; i++) {
-            Player player = losers[i];
-            player.playGame(avgWinner, outcomeLosers, perfLosers[i]);
-            database.updateRating(namesLost[i], String.valueOf(player.getRating()),
-                    Util.DECIMAL_FORMAT.format(player.getDeviation()));
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating()).append(
-                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".\n");
+            PlayerWrapper player = losers.get(i);
+            database.updateRating(player);
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
+                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation())).append(". New mean: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getMean())).append(".\n");
         }
         msg.getChannel().sendMessage(builder).queue();
     }

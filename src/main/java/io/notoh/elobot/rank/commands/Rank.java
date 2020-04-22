@@ -3,7 +3,7 @@ package io.notoh.elobot.rank.commands;
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
-import io.notoh.elobot.rank.Player;
+import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.List;
@@ -27,18 +27,19 @@ public class Rank extends Command {
         }
 
         String name = args[0].toLowerCase();
-        Player player = database.getPlayers().get(name);
+        PlayerWrapper player = database.getPlayers().get(name);
         if(player == null) {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
             return;
         }
-        List<Player> players = database.getSortedPlayers();
+        List<PlayerWrapper> players = database.getSortedPlayers();
         int rank = players.indexOf(player) + 1;
-        double deviation = player.getDeviation();
-        int rating = player.getRating();
+        double rating = player.getRating().getConservativeRating();
 
-        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + rating + " with a " +
-                "performance deviation of " + Util.DECIMAL_FORMAT.format(deviation) + ".").queue();
+        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + Util.DECIMAL_FORMAT.format(rating) + " with a " +
+                "standard deviation of " + Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation()) + " " +
+                "with a performance mean of " + Util.DECIMAL_FORMAT.format(player.getRating().getMean()) + "." +
+                "Their KDA is " + Util.DECIMAL_FORMAT.format(player.getKDA()) + " and their Win% is " + Util.DECIMAL_FORMAT.format(player.getWinPct()*100)).queue();
     }
 
 }
