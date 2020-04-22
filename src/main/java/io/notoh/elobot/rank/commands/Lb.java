@@ -2,6 +2,7 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
+import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -45,7 +46,8 @@ public class Lb extends Command {
                 break;
             }
             PlayerWrapper player = players.get(i);
-            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getPlayer().getId()).append(" - ").append(player.getRating().getConservativeRating()).append("\n");
+            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getPlayer().getId()).append(" -" +
+                    " ").append(Util.DECIMAL_FORMAT.format(player.getRating().getConservativeRating())).append("\n");
         }
         builder.append("```");
         msg.getChannel().sendMessage(builder.build()).queue();

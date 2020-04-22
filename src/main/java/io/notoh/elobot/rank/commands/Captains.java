@@ -28,12 +28,12 @@ public class Captains extends Command {
         PlayerWrapper second = null;
         for(String name : args) {
             PlayerWrapper player = database.getPlayers().get(name.toLowerCase());
-            boolean isValid =
-                    Util.validCaptains.contains(name.toLowerCase()) || player.getWins()+player.getLosses()>=10;
             if(player == null) {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                 return;
             }
+            boolean isValid =
+                    Util.validCaptains.contains(name.toLowerCase()) || player.getWins()+player.getLosses()>=10;
             if(!isValid)
                 continue;
             double rating = player.getRating().getConservativeRating();
