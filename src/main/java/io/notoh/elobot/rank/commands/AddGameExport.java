@@ -121,7 +121,7 @@ public class AddGameExport extends Command {
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
+            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
                     ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation())).append(". New mean: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getMean())).append(".\n");
         }
         msg.getChannel().sendMessage(builder).queue();

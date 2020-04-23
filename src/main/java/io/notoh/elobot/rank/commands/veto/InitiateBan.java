@@ -18,7 +18,7 @@ public class InitiateBan extends Command {
         maps.put("atomic", false);
         maps.put("reserve", false);
         maps.put("sandstorm", false);
-        maps.put("temple", false);
+        maps.put("melonfactory", false);
         maps.put("carrier", false);
         maps.put("alleyway", false);
     }
