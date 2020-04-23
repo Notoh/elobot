@@ -24,15 +24,12 @@ public final class Calculator {
         teams.add(lose);
         Map<IPlayer, Rating> results = new TwoTeamTrueSkillCalculator().calculateNewRatings(info, teams, 1, 2);
 
-        for(IPlayer player : win.keySet()) {
-            for(PlayerWrapper wrapper : winners) {
-                wrapper.setRating(results.get(player));
-            }
+        for(PlayerWrapper wrapper : winners) {
+            wrapper.setRating(results.get(wrapper.getPlayer()));
         }
-        for(IPlayer player : lose.keySet()) {
-            for(PlayerWrapper wrapper : losers) {
-                wrapper.setRating(results.get(player));
-            }
+
+        for(PlayerWrapper wrapper : losers) {
+            wrapper.setRating(results.get(wrapper.getPlayer()));
         }
     }
 

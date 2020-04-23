@@ -76,6 +76,6 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
     @Override
     public int compareTo(@NotNull PlayerWrapper o) {
-        return (int) (o.rating.getConservativeRating() - rating.getConservativeRating());
+        return (int) (1000*o.rating.getConservativeRating() - 1000*rating.getConservativeRating());
     }
 }

@@ -60,7 +60,7 @@ public class AddGameExport extends Command {
         String[] killsWinners = new String[5];
         String[] killsLosers = new String[5];
         startIndexWin = won == roundsA ? 8 : 35;
-        startIndexLoss = won == roundsA ? 8 : 35;
+        startIndexLoss = won == roundsA ? 35 : 8;
         count = 0;
         for(int i = startIndexWin; i < startIndexWin+24; i+=5) {
             killsWinners[count] = args[i];
