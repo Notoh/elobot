@@ -67,7 +67,7 @@ public final class Database {
             players.put(name, player);
             sortedPlayers.add(player);
             PreparedStatement stmt =
-                    conn.prepareStatement("INSERT INTO ratings VALUES (?, ?, ?, ?,?,?,?,?)");
+                    conn.prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?)");
             stmt.setString(1, name);
             stmt.setString(2, String.valueOf(player.getRating()));
             stmt.setString(3, String.valueOf(player.getKills()));
@@ -101,7 +101,7 @@ public final class Database {
             int deaths = playerWrapper.getDeaths();
             int wins = playerWrapper.getWins();
             int losses = playerWrapper.getLosses();
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET mean = ?, deviation = ?, rating " + "=" +
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET rating " + "=" +
                     " ?, kills = ?, deaths = ?, wins = ?, losses = ?" +
                     " WHERE handle = ?");
             stmt.setString(1, String.valueOf(rating));
