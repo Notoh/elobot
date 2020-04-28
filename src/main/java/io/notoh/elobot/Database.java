@@ -122,7 +122,8 @@ public final class Database {
             PlayerWrapper player = players.get(old);
             players.remove(old);
             sortedPlayers.remove(player);
-            PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getRating(), player.getKills(), player.getDeaths(), player.getWins(), player.getLosses());
+            PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getKills(), player.getDeaths(),
+                    player.getWins(), player.getLosses(), player.getRating());
             players.put(newName, newPlayer);
             sortedPlayers.add(newPlayer);
             PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
