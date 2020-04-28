@@ -26,6 +26,6 @@ public class Util {
         validCaptains.addAll(Arrays.asList("n0toh","crutan","19in","plusoneben","zxmonster","mr_spider_rider","usleless","storytale","_j4m",
                 "27hr","toolchests","narlugaa","subaki2k","frqk","wwap","imsadaf","pyroaura","uktarik","impqkt",
                 "klammbud","canadianave","dillaware","_icethea_","zhal","xephyisrip","odinleader","ssupersaiyan",
-                "kellyfornia","freealcohol"));
+                "kellyfornia","freealcohol", "frqk", "drahyrt"));
     }
 }

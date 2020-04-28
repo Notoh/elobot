@@ -30,10 +30,7 @@ public class Register extends Command {
             return;
         }
         ds.addPlayer(name);
-        msg.getChannel().sendMessage("Player " + name + " added. You start with a rating of 0, standard mean of 25 " +
-                "and a " +
-                "standard " +
-                "deviation of 8.3333").queue();
+        msg.getChannel().sendMessage("Player " + name + " added. You start with a rating of 1500.").queue();
 
     }
 }

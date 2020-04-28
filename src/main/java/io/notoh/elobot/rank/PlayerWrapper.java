@@ -1,36 +1,22 @@
 package io.notoh.elobot.rank;
 
-import de.gesundkrank.jskills.Player;
-import de.gesundkrank.jskills.Rating;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
-    private final Player<String> player;
-    private Rating rating;
     private int kills;
     private int deaths;
     private int wins;
     private int losses;
+    private int rating;
+    private String name;
 
-    public PlayerWrapper(String name, Rating rating, int kills, int deaths, int wins, int losses) {
-        this.player = new Player<>(name);
-        this.rating = rating;
+    public PlayerWrapper(String name, int kills, int deaths, int wins, int losses, int rating) {
+        this.name = name;
         this.kills = kills;
         this.deaths = deaths;
         this.wins = wins;
         this.losses = losses;
-    }
-
-    public Player<String> getPlayer() {
-        return player;
-    }
-
-    public Rating getRating() {
-        return rating;
-    }
-
-    public void setRating(Rating rating) {
         this.rating = rating;
     }
 
@@ -74,8 +60,22 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         return losses;
     }
 
+    public int getRating() {
+        return rating;
+    }
+
+    public void playGame(int kills, int deaths, double outcome) {
+        int out = outcome > 0.5 ? 12 : -12;
+
+        rating += (0.8*kills - deaths) + out;
+    }
+
     @Override
     public int compareTo(@NotNull PlayerWrapper o) {
-        return (int) (1000*o.rating.getConservativeRating() - 1000*rating.getConservativeRating());
+        return (o.rating - rating);
+    }
+
+    public String getName() {
+        return name;
     }
 }

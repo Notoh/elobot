@@ -3,7 +3,6 @@ package io.notoh.elobot.rank.commands;
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
-import io.notoh.elobot.rank.Calculator;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
@@ -40,9 +39,6 @@ public class AddGameExport extends Command {
         int roundsA = Integer.parseInt(args[6]);
         int roundsB = Integer.parseInt(args[33]);
         int won = Math.max(roundsA, roundsB);
-        int lost = Math.min(roundsA, roundsB);
-        //double outcomeLosers = Calculator.gamePct(lost, won);
-        //double outcomeWinners = Calculator.gamePct(won, lost);
         String[] namesWon = new String[5];
         String[] namesLost = new String[5];
         int startIndexWin = won == roundsA ? 7 : 34;
@@ -110,20 +106,20 @@ public class AddGameExport extends Command {
             losers.get(i).addDeaths(deathsLost[i]);
             losers.get(i).addLoss();
         }
-        Calculator.playGame(winners, losers);
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = winners.get(i);
+            player.playGame(killsWon[i], deathsWon[i], 1.0);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
-                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation())).append(". New mean: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getMean())).append(".\n");
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating()).append(
+                    ".").append(".\n");
         }
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
+            player.playGame(killsLost[i], deathsLost[i], 0);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating().getConservativeRating()).append(
-                    ". New ").append("deviation: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation())).append(". New mean: ").append(Util.DECIMAL_FORMAT.format(player.getRating().getMean())).append(".\n");
-        }
+            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating()).append(
+                    ".").append(".\n");        }
         msg.getChannel().sendMessage(builder).queue();
     }
 }

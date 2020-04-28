@@ -1,7 +1,6 @@
 package io.notoh.elobot;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import de.gesundkrank.jskills.Rating;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
@@ -35,15 +34,12 @@ public final class Database {
             while(ranks.next()) {
 
                 String name = ranks.getString(1);
-                double mean = Double.parseDouble(ranks.getString(2));
-                double deviation = Double.parseDouble(ranks.getString(3));
-                double conservative = Double.parseDouble(ranks.getString(4));
-                int kills = Integer.parseInt(ranks.getString(5));
-                int deaths = Integer.parseInt(ranks.getString(6));
-                int wins = Integer.parseInt(ranks.getString(7));
-                int losses = Integer.parseInt(ranks.getString(8));
-                Rating rating = new Rating(mean, deviation);
-                PlayerWrapper player = new PlayerWrapper(name, rating, kills,deaths,wins,losses);
+                int rating = Integer.parseInt(ranks.getString(2));
+                int kills = Integer.parseInt(ranks.getString(3));
+                int deaths = Integer.parseInt(ranks.getString(4));
+                int wins = Integer.parseInt(ranks.getString(5));
+                int losses = Integer.parseInt(ranks.getString(6));
+                PlayerWrapper player = new PlayerWrapper(name, kills, deaths, wins, losses, rating);
                 players.put(name, player);
                 sortedPlayers.add(player);
             }
@@ -67,19 +63,17 @@ public final class Database {
 
     public void addPlayer(String name) {
         try {
-            PlayerWrapper player = new PlayerWrapper(name, new Rating(25, 25.0/3.0),0,0,0,0);
+            PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0,1500);
             players.put(name, player);
             sortedPlayers.add(player);
             PreparedStatement stmt =
                     conn.prepareStatement("INSERT INTO ratings VALUES (?, ?, ?, ?,?,?,?,?)");
             stmt.setString(1, name);
-            stmt.setString(2, Util.DECIMAL_FORMAT.format(player.getRating().getMean()));
-            stmt.setString(3, Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation()));
-            stmt.setString(4, Util.DECIMAL_FORMAT.format(player.getRating().getConservativeRating()));
-            stmt.setString(5, String.valueOf(player.getKills()));
-            stmt.setString(6, String.valueOf(player.getDeaths()));
-            stmt.setString(7, String.valueOf(player.getWins()));
-            stmt.setString(8, String.valueOf(player.getLosses()));
+            stmt.setString(2, String.valueOf(player.getRating()));
+            stmt.setString(3, String.valueOf(player.getKills()));
+            stmt.setString(4, String.valueOf(player.getDeaths()));
+            stmt.setString(5, String.valueOf(player.getWins()));
+            stmt.setString(6, String.valueOf(player.getLosses()));
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
@@ -102,23 +96,20 @@ public final class Database {
 
     public void updateRating(PlayerWrapper playerWrapper) {
         try {
-            double mean = playerWrapper.getRating().getMean();
-            double deviation = playerWrapper.getRating().getStandardDeviation();
-            double conservative = playerWrapper.getRating().getConservativeRating();
+            int rating = playerWrapper.getRating();
             int kills = playerWrapper.getKills();
             int deaths = playerWrapper.getDeaths();
             int wins = playerWrapper.getWins();
             int losses = playerWrapper.getLosses();
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET mean = ?, deviation = ?, conservative " + "= ?, kills = ?, deaths = ?, wins = ?, losses = ?" +
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET mean = ?, deviation = ?, rating " + "=" +
+                    " ?, kills = ?, deaths = ?, wins = ?, losses = ?" +
                     " WHERE handle = ?");
-            stmt.setString(1, Util.DECIMAL_FORMAT.format(mean));
-            stmt.setString(2, Util.DECIMAL_FORMAT.format(deviation));
-            stmt.setString(3, Util.DECIMAL_FORMAT.format(conservative));
-            stmt.setString(4, String.valueOf(kills));
-            stmt.setString(5, String.valueOf(deaths));
-            stmt.setString(6, String.valueOf(wins));
-            stmt.setString(7, String.valueOf(losses));
-            stmt.setString(8, playerWrapper.getPlayer().getId());
+            stmt.setString(1, String.valueOf(rating));
+            stmt.setString(2, String.valueOf(kills));
+            stmt.setString(3, String.valueOf(deaths));
+            stmt.setString(4, String.valueOf(wins));
+            stmt.setString(5, String.valueOf(losses));
+            stmt.setString(6, playerWrapper.getName());
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
@@ -134,7 +125,7 @@ public final class Database {
             PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getRating(), player.getKills(), player.getDeaths(), player.getWins(), player.getLosses());
             players.put(newName, newPlayer);
             sortedPlayers.add(newPlayer);
-            PreparedStatement stmt = conn.prepareStatement("UPDATE RATINGS SET handle = ? WHERE handle = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
             stmt.setString(1, newName);
             stmt.setString(2, old);
         } catch (SQLException e) {

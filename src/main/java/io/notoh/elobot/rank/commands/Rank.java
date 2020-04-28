@@ -34,12 +34,10 @@ public class Rank extends Command {
         }
         List<PlayerWrapper> players = database.getSortedPlayers();
         int rank = players.indexOf(player) + 1;
-        double rating = player.getRating().getConservativeRating();
+        int rating = player.getRating();
 
-        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + Util.DECIMAL_FORMAT.format(rating) + " with a " +
-                "standard deviation of " + Util.DECIMAL_FORMAT.format(player.getRating().getStandardDeviation()) + " " +
-                "with a performance mean of " + Util.DECIMAL_FORMAT.format(player.getRating().getMean()) + "." +
-                "Their KDA is " + Util.DECIMAL_FORMAT.format(player.getKDA()) + " and their Win% is " + Util.DECIMAL_FORMAT.format(player.getWinPct()*100)).queue();
+        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + rating + " with a " +
+                "Their KDA is " + Util.DECIMAL_FORMAT.format(player.getKDA()) + " and their Win% is " + Util.DECIMAL_FORMAT.format(player.getWinPct()*100) + "%.").queue();
     }
 
 }
