@@ -64,6 +64,10 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         return rating;
     }
 
+    public void punish() {
+        rating -= 20;
+    }
+
     public void playGame(int kills, int deaths, double outcome) {
         int out = outcome > 0.5 ? 12 : -12;
 

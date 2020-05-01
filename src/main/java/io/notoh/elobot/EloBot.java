@@ -38,6 +38,7 @@ public final class EloBot {
             handler.addCommand(new Help(database));
             handler.addCommand(new Captains(database));
             handler.addCommand(new ChangeName(database));
+            handler.addCommand(new Punish(database));
 
             handler.addCommand(new Lb(database));
             handler.addCommand(new R(database));

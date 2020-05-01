@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.entities.Message;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class Database {
 
@@ -49,6 +51,21 @@ public final class Database {
         } catch(SQLException e) {
             e.printStackTrace();
         }
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            System.out.println("Database keep alive.");
+            try {
+                Statement rankxd = conn.createStatement();
+                ResultSet rank = rankxd.executeQuery("SELECT * FROM ratings");
+                rankxd.close();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+                bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> sql exception debug flag " +
+                        "raised").queue();
+            }
+            bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("Keep Alive success!").queue();
+        }, 1, 1, TimeUnit.DAYS);
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 conn.close();

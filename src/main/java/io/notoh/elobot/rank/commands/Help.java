@@ -23,8 +23,9 @@ public class Help extends Command {
                 "-help is " +
                 "this command" +
                 ".\nFor " +
-                "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgameexport <exact_podcrash_export> adds a game from a \" +\n" +
-                "                \"podcrash export.```").queue();
+                "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgameexport " +
+                "<exact_podcrash_export> adds a game from a podcrash export.\n-punish <player> punishes a " +
+                "player's rating.```").queue();
 
     }
 }
