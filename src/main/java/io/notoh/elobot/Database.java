@@ -146,6 +146,8 @@ public final class Database {
             PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
             stmt.setString(1, newName);
             stmt.setString(2, old);
+            stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

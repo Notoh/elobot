@@ -42,6 +42,6 @@ public class Carry extends Command {
         }
         playerWrapper.carry();
         database.updateRating(playerWrapper);
-        msg.getChannel().sendMessage("Player " + name + " added 6 rating.").queue();
+        msg.getChannel().sendMessage("Player " + name + " added 5 rating.").queue();
     }
 }

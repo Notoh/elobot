@@ -95,13 +95,13 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     public void playGame(int kills, int deaths, double outcome) {
         int out = outcome > 0.5 ? 12 : -12;
 
-        rating += (0.8*kills - deaths) + out;
+        rating += (Math.ceil(0.8*kills) - deaths) + out;
     }
 
     public void invertGame(int kills, int deaths, double outcome) {
         int out = outcome > 0.5 ? 12 : -12;
 
-        rating -= (0.8*kills - deaths) + out;
+        rating -= (Math.ceil(0.8*kills) - deaths) + out;
     }
 
     public void forceRating(int rating) {

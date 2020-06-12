@@ -36,7 +36,7 @@ public class Rank extends Command {
         int rank = players.indexOf(player) + 1;
         int rating = player.getRating();
 
-        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + rating + " with a " +
+        msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + rating + " with a" +
                 " KDA of " + Util.DECIMAL_FORMAT.format(player.getKDA()) + " and a Win% of " + Util.DECIMAL_FORMAT.format(player.getWinPct()*100) + "%.").queue();
     }
 
