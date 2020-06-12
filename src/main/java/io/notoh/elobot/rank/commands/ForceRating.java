@@ -7,12 +7,12 @@ import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 
-public class Punish extends Command {
+public class ForceRating extends Command  {
 
     private Database database;
 
-    public Punish(Database database) {
-        super("punish");
+    public ForceRating(Database database) {
+        super("forcerating");
         this.database = database;
     }
 
@@ -30,18 +30,22 @@ public class Punish extends Command {
         }
 
         String[] args = getArguments(msg);
-        if(args.length != 1) {
-            msg.getChannel().sendMessage("Usage: -punish <player>").queue();
+        if(args.length != 2) {
+            msg.getChannel().sendMessage("Usage: -forcerating <player> <rating>").queue();
             return;
         }
         String name = args[0].toLowerCase();
         PlayerWrapper playerWrapper = database.getPlayers().get(name);
-        if(playerWrapper == null) {
-            msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
+        int rating;
+        try {
+            rating = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            msg.getChannel().sendMessage(args[1] + " is not a number!").queue();
             return;
         }
-        playerWrapper.punish();
+
+        playerWrapper.forceRating(rating);
         database.updateRating(playerWrapper);
-        msg.getChannel().sendMessage("Player " + name + " punished 20 rating.").queue();
+        msg.getChannel().sendMessage("Player " + name + "'s rating forced to " + rating + ".").queue();
     }
 }

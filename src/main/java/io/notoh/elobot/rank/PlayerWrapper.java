@@ -20,6 +20,26 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         this.rating = rating;
     }
 
+    public void carry() {
+        rating += 5;
+    }
+
+    public void removeKills(int kills) {
+        this.kills -= kills;
+    }
+
+    public void removeDeaths(int deaths) {
+        this.deaths -= deaths;
+    }
+
+    public void removeWin() {
+        wins--;
+    }
+
+    public void removeLoss() {
+        losses--;
+    }
+
     public void addKills(int kills) {
         this.kills += kills;
     }
@@ -68,10 +88,24 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         rating -= 20;
     }
 
+    public void pardon() {
+        rating += 20;
+    }
+
     public void playGame(int kills, int deaths, double outcome) {
         int out = outcome > 0.5 ? 12 : -12;
 
         rating += (0.8*kills - deaths) + out;
+    }
+
+    public void invertGame(int kills, int deaths, double outcome) {
+        int out = outcome > 0.5 ? 12 : -12;
+
+        rating -= (0.8*kills - deaths) + out;
+    }
+
+    public void forceRating(int rating) {
+        this.rating = rating;
     }
 
     @Override

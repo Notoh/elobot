@@ -25,7 +25,9 @@ public class Help extends Command {
                 ".\nFor " +
                 "moderators:\n-deleteplayer <player> removes a player from the rating list.\n-addgameexport " +
                 "<exact_podcrash_export> adds a game from a podcrash export.\n-punish <player> punishes a " +
-                "player's rating.```").queue();
+                "player's rating.\n-pardon <player> undos a punish.\n-removegame <exact export format> undoes a " +
+                "game inputted.\n-forcerating <player> <rating> sets a player's rating.\n-carry <player> gives a " +
+                "player their carry bonus for the game.```").queue();
 
     }
 }

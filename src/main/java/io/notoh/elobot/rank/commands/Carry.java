@@ -7,12 +7,12 @@ import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 
-public class Punish extends Command {
+public class Carry extends Command {
 
     private Database database;
 
-    public Punish(Database database) {
-        super("punish");
+    public Carry(Database database) {
+        super("carry");
         this.database = database;
     }
 
@@ -20,7 +20,7 @@ public class Punish extends Command {
     public void run(Message msg) {
         boolean hasPerms = false;
         for(Role role : msg.getGuild().getMemberById(msg.getAuthor().getId()).getRoles()) {
-            if(role.getId().equals(Util.MOD_ROLE)) {
+            if(role.getId().equals(Util.UPDATE_ROLE)) {
                 hasPerms = true;
             }
         }
@@ -31,7 +31,7 @@ public class Punish extends Command {
 
         String[] args = getArguments(msg);
         if(args.length != 1) {
-            msg.getChannel().sendMessage("Usage: -punish <player>").queue();
+            msg.getChannel().sendMessage("Usage: -carry <player>").queue();
             return;
         }
         String name = args[0].toLowerCase();
@@ -40,8 +40,8 @@ public class Punish extends Command {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
             return;
         }
-        playerWrapper.punish();
+        playerWrapper.carry();
         database.updateRating(playerWrapper);
-        msg.getChannel().sendMessage("Player " + name + " punished 20 rating.").queue();
+        msg.getChannel().sendMessage("Player " + name + " added 6 rating.").queue();
     }
 }

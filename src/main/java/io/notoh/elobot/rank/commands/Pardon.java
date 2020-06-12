@@ -7,12 +7,12 @@ import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 
-public class Punish extends Command {
+public class Pardon extends Command {
 
     private Database database;
 
-    public Punish(Database database) {
-        super("punish");
+    public Pardon(Database database) {
+        super("pardon");
         this.database = database;
     }
 
@@ -31,7 +31,7 @@ public class Punish extends Command {
 
         String[] args = getArguments(msg);
         if(args.length != 1) {
-            msg.getChannel().sendMessage("Usage: -punish <player>").queue();
+            msg.getChannel().sendMessage("Usage: -pardon <player>").queue();
             return;
         }
         String name = args[0].toLowerCase();
@@ -40,8 +40,8 @@ public class Punish extends Command {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
             return;
         }
-        playerWrapper.punish();
+        playerWrapper.pardon();
         database.updateRating(playerWrapper);
-        msg.getChannel().sendMessage("Player " + name + " punished 20 rating.").queue();
+        msg.getChannel().sendMessage("Player " + name + " added 20 rating.").queue();
     }
 }
