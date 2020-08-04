@@ -32,6 +32,11 @@ public class ChangeName extends Command {
             msg.getChannel().sendMessage("Correct usage: -changename <old> <new>").queue();
             return;
         }
+        if(database.getPlayers().get(args[0].toLowerCase()) == null) {
+            msg.getChannel().sendMessage("Player " + args[0] + " does not exist!").queue();
+            return;
+        }
+
         database.changeName(args[0].toLowerCase(), args[1].toLowerCase());
         msg.getChannel().sendMessage("Name of " + args[0].toLowerCase() + " changed to " + args[1].toLowerCase() +
                 ".").queue();
