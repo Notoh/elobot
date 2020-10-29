@@ -17,6 +17,7 @@ public class MainEventHandler extends ListenerAdapter {
         this.ds = ds;
     }
 
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
@@ -43,6 +44,7 @@ public class MainEventHandler extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         System.out.println("looks like notohs not a completely shit coder");
+        event.getJDA().getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> jda onReady() callback").queue();
     }
 
     public void addCommand(Command cmd) {

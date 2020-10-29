@@ -23,12 +23,15 @@ public final class EloBot {
             Util.DB_PASS = br.readLine();
             Util.DB_URL = br.readLine();
             br.close();
-            System.out.println("Read credentials successfully.");
+            System.out.println("Read credentials successfully, building JDA.");
 
-            JDA bot = new JDABuilder(Util.TOKEN).build().awaitReady();
+            JDA bot = new JDABuilder(Util.TOKEN).build();
+            System.out.println("JDA built, starting DB");
             Database database = new Database(bot);
             MainEventHandler handler = new MainEventHandler(database);
             bot.addEventListener(handler);
+            bot.awaitReady();
+            bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> jda onReady() callback").queue();
 
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));
@@ -51,7 +54,7 @@ public final class EloBot {
             handler.addCommand(new InitiateBan(database));
             handler.addCommand(new NotBanned(database));
 
-         } catch (LoginException | InterruptedException | IOException e) {
+        } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

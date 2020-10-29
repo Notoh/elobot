@@ -19,16 +19,20 @@ public final class Database {
 
     public Database(JDA bot) {
         try {
+            System.out.println("Connecting to DB");
             MysqlDataSource dataSource = new MysqlDataSource();
             dataSource.setUser(Util.DB_USER);
             dataSource.setPassword(Util.DB_PASS);
             dataSource.setURL(Util.DB_URL);
 
+            System.out.println("Credentials set");
+
             dataSource.setCreateDatabaseIfNotExist(true);
             dataSource.setAutoReconnect(true);
+            System.out.println("Getting connection");
             conn = dataSource.getConnection();
 
-            System.out.println("Connected to DB.");
+            System.out.println("Connected to DB");
 
             Statement rankData = conn.createStatement();
             ResultSet ranks = rankData.executeQuery("SELECT * FROM ratings");
