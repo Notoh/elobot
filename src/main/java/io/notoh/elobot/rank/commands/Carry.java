@@ -4,10 +4,9 @@ import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.PlayerWrapper;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
-
-import java.util.Objects;
 
 public class Carry extends Command {
 
@@ -21,11 +20,16 @@ public class Carry extends Command {
     @Override
     public void run(Message msg) {
         boolean hasPerms = false;
-        for(Role role : Objects.requireNonNull(msg.getGuild().getMemberById(msg.getAuthor().getId())).getRoles()) {
+        Member member = msg.getMember();
+        if(member == null) {
+            return;
+        }
+        for(Role role : member.getRoles()) {
             if(role.getId().equals(Util.UPDATE_ROLE)) {
                 hasPerms = true;
             }
         }
+
         if(!hasPerms) {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
