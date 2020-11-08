@@ -2,8 +2,8 @@ package io.notoh.elobot;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.notoh.elobot.rank.PlayerWrapper;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.sql.*;
 import java.util.*;

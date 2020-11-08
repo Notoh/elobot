@@ -3,8 +3,8 @@ package io.notoh.elobot.rank.commands;
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.rank.PlayerWrapper;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package io.notoh.elobot.rank.commands.veto;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.util.HashMap;
 import java.util.Map;

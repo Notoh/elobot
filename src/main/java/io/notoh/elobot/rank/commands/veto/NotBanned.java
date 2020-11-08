@@ -2,8 +2,8 @@ package io.notoh.elobot.rank.commands.veto;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
 
 public class NotBanned extends Command {
 

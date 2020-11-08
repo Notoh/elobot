@@ -1,6 +1,7 @@
 package io.notoh.elobot;
 
-import net.dv8tion.jda.core.entities.Message;
+
+import net.dv8tion.jda.api.entities.Message;
 
 public abstract class Command {
 

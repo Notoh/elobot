@@ -4,11 +4,12 @@ import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.PlayerWrapper;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AddGameExport extends Command {
 
@@ -22,7 +23,7 @@ public class AddGameExport extends Command {
     @Override
     public void run(Message msg) {
         boolean hasPerms = false;
-        for(Role role : msg.getGuild().getMemberById(msg.getAuthor().getId()).getRoles()) {
+        for(Role role : Objects.requireNonNull(msg.getGuild().getMemberById(msg.getAuthor().getId())).getRoles()) {
             if(role.getId().equals(Util.UPDATE_ROLE)) {
                 hasPerms = true;
             }

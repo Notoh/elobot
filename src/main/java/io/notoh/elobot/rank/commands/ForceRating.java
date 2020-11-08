@@ -4,8 +4,8 @@ import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.PlayerWrapper;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 
 public class ForceRating extends Command  {
 

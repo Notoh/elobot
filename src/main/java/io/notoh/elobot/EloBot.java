@@ -5,8 +5,8 @@ import io.notoh.elobot.rank.commands.*;
 import io.notoh.elobot.rank.commands.veto.Ban;
 import io.notoh.elobot.rank.commands.veto.InitiateBan;
 import io.notoh.elobot.rank.commands.veto.NotBanned;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 
 import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
@@ -24,14 +24,11 @@ public final class EloBot {
             Util.DB_URL = br.readLine();
             br.close();
             System.out.println("Read credentials successfully, building JDA.");
-
-            JDA bot = new JDABuilder(Util.TOKEN).build();
+            JDA bot = JDABuilder.createDefault(Util.TOKEN).build().awaitReady();
             System.out.println("JDA built, starting DB");
             Database database = new Database(bot);
             MainEventHandler handler = new MainEventHandler(database);
             bot.addEventListener(handler);
-            bot.awaitReady();
-            bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> jda onReady() callback").queue();
 
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));

@@ -2,7 +2,7 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 
 public class Help extends Command {
 
