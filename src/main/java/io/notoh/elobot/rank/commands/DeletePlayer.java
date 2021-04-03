@@ -2,14 +2,11 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import io.notoh.elobot.Util;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 
 public class DeletePlayer extends Command {
 
-    private Database database;
+    private final Database database;
 
     public DeletePlayer(Database database) {
         super("deleteplayer");
@@ -18,21 +15,11 @@ public class DeletePlayer extends Command {
 
     @Override
     public void run(Message msg) {
-        boolean hasPerms = false;
-        Member member = msg.getMember();
-        if(member == null) {
-            return;
-        }
-        for(Role role : member.getRoles()) {
-            if(role.getId().equals(Util.UPDATE_ROLE)) {
-                hasPerms = true;
-            }
-        }
-
-        if(!hasPerms) {
+        if(!checkPermission(msg.getMember())) {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }
+
         String[] args = getArguments(msg);
         if(args.length == 0) {
             msg.getChannel().sendMessage("Correct usage: -deleteplayer <player>").queue();

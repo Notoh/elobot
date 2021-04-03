@@ -2,15 +2,12 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.PlayerWrapper;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 
 public class Pardon extends Command {
 
-    private Database database;
+    private final Database database;
 
     public Pardon(Database database) {
         super("pardon");
@@ -19,18 +16,7 @@ public class Pardon extends Command {
 
     @Override
     public void run(Message msg) {
-        boolean hasPerms = false;
-        Member member = msg.getMember();
-        if(member == null) {
-            return;
-        }
-        for(Role role : member.getRoles()) {
-            if(role.getId().equals(Util.MOD_ROLE)) {
-                hasPerms = true;
-            }
-        }
-
-        if(!hasPerms) {
+        if(!checkPermission(msg.getMember())) {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }

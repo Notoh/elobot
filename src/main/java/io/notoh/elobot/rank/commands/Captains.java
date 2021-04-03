@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Message;
 
 
 public class Captains extends Command {
-    private Database database;
+    private final Database database;
 
     public Captains(Database database) {
         super("captains");

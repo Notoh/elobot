@@ -14,8 +14,8 @@ public final class Database {
 
     private Connection conn;
     Map<String, Message> messageCache = new HashMap<>();
-    private Map<String, PlayerWrapper> players = new HashMap<>();
-    private List<PlayerWrapper> sortedPlayers = new ArrayList<>();
+    private final Map<String, PlayerWrapper> players = new HashMap<>();
+    private final List<PlayerWrapper> sortedPlayers = new ArrayList<>();
 
     public Database(JDA bot) {
         try {

@@ -10,16 +10,16 @@ import java.util.List;
 
 public class Leaderboard extends Command {
 
-    private Database database;
+    private final Database database;
 
     public Leaderboard(Database ds) {
-        super("leaderboard");
+        super("leaderboard", "lb");
         this.database = ds;
     }
 
     @Override
     public void run(Message msg) {
-        int page = 0;
+        int page;
         String[] args = getArguments(msg);
         if(args.length == 0) {
             page = 1;

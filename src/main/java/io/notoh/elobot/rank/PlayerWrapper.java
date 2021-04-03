@@ -1,7 +1,5 @@
 package io.notoh.elobot.rank;
 
-import org.jetbrains.annotations.NotNull;
-
 public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
     private int kills;
@@ -9,7 +7,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     private int wins;
     private int losses;
     private int rating;
-    private String name;
+    private final String name;
 
     public PlayerWrapper(String name, int kills, int deaths, int wins, int losses, int rating) {
         this.name = name;
@@ -109,7 +107,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     }
 
     @Override
-    public int compareTo(@NotNull PlayerWrapper o) {
+    public int compareTo(PlayerWrapper o) {
         return (o.rating - rating);
     }
 

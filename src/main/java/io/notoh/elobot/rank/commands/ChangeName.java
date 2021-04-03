@@ -2,14 +2,12 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import io.notoh.elobot.Util;
-import net.dv8tion.jda.api.entities.Member;
+import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 
 public class ChangeName extends Command {
 
-    private Database database;
+    private final Database database;
 
     public ChangeName(Database database) {
         super("changename");
@@ -18,18 +16,7 @@ public class ChangeName extends Command {
 
     @Override
     public void run(Message msg) {
-        boolean hasPerms = false;
-        Member member = msg.getMember();
-        if(member == null) {
-            return;
-        }
-        for(Role role : member.getRoles()) {
-            if(role.getId().equals(Util.UPDATE_ROLE)) {
-                hasPerms = true;
-            }
-        }
-
-        if(!hasPerms) {
+        if(!checkPermission(msg.getMember())) {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }
@@ -38,13 +25,21 @@ public class ChangeName extends Command {
             msg.getChannel().sendMessage("Correct usage: -changename <old> <new>").queue();
             return;
         }
-        if(database.getPlayers().get(args[0].toLowerCase()) == null) {
-            msg.getChannel().sendMessage("Player " + args[0] + " does not exist!").queue();
+
+        String oldName = args[0].toLowerCase();
+        String newName = args[1].toLowerCase();
+        PlayerWrapper player = database.getPlayers().get(newName);
+        if(player != null) {
+            msg.getChannel().sendMessage("Player " + newName + " already exists!").queue();
             return;
         }
 
-        database.changeName(args[0].toLowerCase(), args[1].toLowerCase());
-        msg.getChannel().sendMessage("Name of " + args[0].toLowerCase() + " changed to " + args[1].toLowerCase() +
-                ".").queue();
+        if(database.getPlayers().get(oldName) == null) {
+            msg.getChannel().sendMessage("Player " + oldName + " does not exist!").queue();
+            return;
+        }
+
+        database.changeName(oldName, newName);
+        msg.getChannel().sendMessage("Name of " + oldName + " changed to " + newName + ".").queue();
     }
 }

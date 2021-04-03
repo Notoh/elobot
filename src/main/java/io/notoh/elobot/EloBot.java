@@ -2,9 +2,6 @@ package io.notoh.elobot;
 
 
 import io.notoh.elobot.rank.commands.*;
-import io.notoh.elobot.rank.commands.veto.Ban;
-import io.notoh.elobot.rank.commands.veto.InitiateBan;
-import io.notoh.elobot.rank.commands.veto.NotBanned;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
@@ -35,7 +32,7 @@ public final class EloBot {
             handler.addCommand(new AddGameExport(database));
             handler.addCommand(new DeletePlayer(database));
             handler.addCommand(new Leaderboard(database));
-            handler.addCommand(new Help(database));
+            handler.addCommand(new Help());
             handler.addCommand(new Captains(database));
             handler.addCommand(new ChangeName(database));
             handler.addCommand(new Punish(database));
@@ -43,14 +40,6 @@ public final class EloBot {
             handler.addCommand(new Carry(database));
             handler.addCommand(new ForceRating(database));
             handler.addCommand(new RemoveGame(database));
-
-            handler.addCommand(new Lb(database));
-            handler.addCommand(new R(database));
-
-            handler.addCommand(new Ban(database));
-            handler.addCommand(new InitiateBan(database));
-            handler.addCommand(new NotBanned(database));
-
         } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

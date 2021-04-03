@@ -10,10 +10,10 @@ import java.util.List;
 
 public class Rank extends Command {
 
-    private Database database;
+    private final Database database;
 
     public Rank(Database ds) {
-        super("rank");
+        super("rank", "r");
         this.database = ds;
     }
 
