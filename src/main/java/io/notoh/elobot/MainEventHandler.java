@@ -11,10 +11,6 @@ public class MainEventHandler extends ListenerAdapter {
 
     private final Map<List<String>, Command> commands = new HashMap<>();
 
-    public MainEventHandler() {
-    }
-
-
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
