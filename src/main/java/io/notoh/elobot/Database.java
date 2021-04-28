@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
 
 import java.sql.*;
 import java.util.*;
@@ -14,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 public final class Database {
 
     private Connection conn;
-    Map<String, Message> messageCache = new HashMap<>();
     private final Map<String, PlayerWrapper> players = new HashMap<>();
     private final List<PlayerWrapper> sortedPlayers;
 
