@@ -31,6 +31,5 @@ public class Register extends Command {
         }
         ds.addPlayer(name);
         msg.getChannel().sendMessage("Player " + name + " added. You start with a rating of 1500.").queue();
-
     }
 }

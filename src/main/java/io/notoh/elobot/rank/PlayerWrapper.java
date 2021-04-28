@@ -1,41 +1,31 @@
 package io.notoh.elobot.rank;
 
+import static io.notoh.elobot.rank.Glicko2.*;
+
 public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
     private int kills;
     private int deaths;
     private int wins;
     private int losses;
-    private int rating;
     private final String name;
+    private double g1Rating;
+    private double g1Rd;
+    private double volatility;
 
-    public PlayerWrapper(String name, int kills, int deaths, int wins, int losses, int rating) {
+    public PlayerWrapper(String name, int kills, int deaths, int wins, int losses, double rating, double deviation, double volatility) {
         this.name = name;
         this.kills = kills;
         this.deaths = deaths;
         this.wins = wins;
         this.losses = losses;
-        this.rating = rating;
+        this.g1Rating = rating;
+        this.g1Rd = deviation;
+        this.volatility = volatility;
     }
 
     public void carry() {
-        rating += 5;
-    }
-
-    public void removeKills(int kills) {
-        this.kills -= kills;
-    }
-
-    public void removeDeaths(int deaths) {
-        this.deaths -= deaths;
-    }
-
-    public void removeWin() {
-        wins--;
-    }
-
-    public void removeLoss() {
-        losses--;
+        g1Rating += 5;
     }
 
     public void addKills(int kills) {
@@ -78,37 +68,53 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         return losses;
     }
 
-    public int getRating() {
-        return rating;
+    public double getRating() {
+        return g1Rating;
+    }
+
+    public void setRating(double rating) {
+        this.g1Rating = rating;
+    }
+
+    public double getDeviation() {
+        return g1Rd;
+    }
+
+    public void setDeviation(double deviation) {
+        this.g1Rd = deviation;
+    }
+
+    public void setVolatility(double volatility) {
+        this.volatility = volatility;
+    }
+
+    public double getVolatility() {
+        return volatility;
     }
 
     public void punish() {
-        rating -= 20;
+        g1Rating -= 20;
     }
 
     public void pardon() {
-        rating += 20;
+        g1Rating += 20;
     }
 
-    public void playGame(int kills, int deaths, double outcome) {
-        int out = outcome > 0.5 ? 12 : -12;
-
-        rating += (Math.ceil(kills) - deaths) + out;
+    public void playGame(int kills, int deaths, double outcome, double[] opponentGlicko2) {
+        int perf = Math.toIntExact(Math.round(((0.8 * kills) - deaths) * 0.4));
+        double[] glicko1Result = glicko2ToGlicko1(calculateNewRating(glicko1ToGlicko2(g1Rating, g1Rd, volatility), opponentGlicko2, outcome));
+        this.setRating(glicko1Result[0] + perf);
+        this.setDeviation(glicko1Result[1]);
+        this.setVolatility(glicko1Result[2]);
     }
 
-    public void invertGame(int kills, int deaths, double outcome) {
-        int out = outcome > 0.5 ? 12 : -12;
-
-        rating -= (Math.ceil(kills) - deaths) + out;
-    }
-
-    public void forceRating(int rating) {
-        this.rating = rating;
+    public double[] getGlicko() {
+        return new double[]{g1Rating, g1Rd, volatility};
     }
 
     @Override
     public int compareTo(PlayerWrapper o) {
-        return (o.rating - rating);
+        return (int) (o.g1Rating - g1Rating);
     }
 
     public String getName() {

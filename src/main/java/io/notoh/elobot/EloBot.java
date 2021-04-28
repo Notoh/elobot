@@ -4,6 +4,7 @@ package io.notoh.elobot;
 import io.notoh.elobot.rank.commands.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
@@ -26,6 +27,7 @@ public final class EloBot {
             Database database = new Database(bot);
             MainEventHandler handler = new MainEventHandler(database);
             bot.addEventListener(handler);
+            bot.getPresence().setActivity(Activity.playing("$"));
 
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));
@@ -39,7 +41,6 @@ public final class EloBot {
             handler.addCommand(new Pardon(database));
             handler.addCommand(new Carry(database));
             handler.addCommand(new ForceRating(database));
-            handler.addCommand(new RemoveGame(database));
         } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

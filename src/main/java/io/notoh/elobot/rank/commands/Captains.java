@@ -22,9 +22,9 @@ public class Captains extends Command {
             msg.getChannel().sendMessage("Usage: -captains <ten players>").queue();
             return;
         }
-        int bestRating = -10000000;
+        double bestRating = -10000000;
         PlayerWrapper best = null;
-        int secondBest = -10000000;
+        double secondBest = -10000000;
         PlayerWrapper second = null;
         for(String name : args) {
             PlayerWrapper player = database.getPlayers().get(name.toLowerCase());
@@ -32,11 +32,10 @@ public class Captains extends Command {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                 return;
             }
-            boolean isValid =
-                    Util.validCaptains.contains(name.toLowerCase()) || player.getWins()+player.getLosses()>=10;
+            boolean isValid = Util.validCaptains.contains(name.toLowerCase()) || player.getWins()+player.getLosses()>=15;
             if(!isValid)
                 continue;
-            int rating = player.getRating();
+            double rating = player.getRating();
             if(rating >= bestRating) {
                 second = best;
                 secondBest = bestRating;
@@ -54,7 +53,7 @@ public class Captains extends Command {
                     msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                     return;
                 }
-                int rating = player.getRating();
+                double rating = player.getRating();
                 if(rating >= bestRating) {
                     second = best;
                     secondBest = bestRating;

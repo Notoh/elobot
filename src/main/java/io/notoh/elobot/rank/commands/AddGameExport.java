@@ -2,11 +2,15 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
+import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.notoh.elobot.rank.Glicko2.gamePct;
+import static io.notoh.elobot.rank.Glicko2.teamGlicko2;
 
 public class AddGameExport extends Command {
 
@@ -31,6 +35,7 @@ public class AddGameExport extends Command {
         int roundsA = Integer.parseInt(args[6]);
         int roundsB = Integer.parseInt(args[33]);
         int won = Math.max(roundsA, roundsB);
+        int lost = Math.min(roundsA, roundsB);
         String[] namesWon = new String[5];
         String[] namesLost = new String[5];
         int startIndexWin = won == roundsA ? 7 : 34;
@@ -99,19 +104,23 @@ public class AddGameExport extends Command {
             losers.get(i).addLoss();
         }
         StringBuilder builder = new StringBuilder();
+        double[] losersGlicko2 = teamGlicko2((double[][]) losers.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).toArray());
+        double winPct = gamePct(won, lost);
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = winners.get(i);
-            player.playGame(killsWon[i], deathsWon[i], 1.0);
+            player.playGame(killsWon[i], deathsWon[i], winPct, losersGlicko2);
             database.updateRating(player);
             builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating()).append(
                     ".").append(".\n");
         }
+        double[] winnersGlicko2 = teamGlicko2((double[][]) winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).toArray());
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
-            player.playGame(killsLost[i], deathsLost[i], 0);
+            player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, winnersGlicko2);
             database.updateRating(player);
             builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating()).append(
-                    ".").append(".\n");        }
+                    ".").append(".\n");
+        }
         msg.getChannel().sendMessage(builder).queue();
     }
 }

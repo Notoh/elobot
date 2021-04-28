@@ -1,6 +1,7 @@
 package io.notoh.elobot;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
+import com.zaxxer.hikari.HikariDataSource;
+import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,17 +21,18 @@ public final class Database {
     public Database(JDA bot) {
         try {
             System.out.println("Connecting to DB");
-            MysqlDataSource dataSource = new MysqlDataSource();
-            dataSource.setUser(Util.DB_USER);
-            dataSource.setPassword(Util.DB_PASS);
-            dataSource.setURL(Util.DB_URL);
-
+            final HikariDataSource ds = new HikariDataSource();
+            ds.setUsername(Util.DB_USER);
+            ds.setPassword(Util.DB_PASS);
+            ds.addDataSourceProperty("autoReconnect", "true");
+            ds.addDataSourceProperty("maxReconnects", "10");
+            ds.addDataSourceProperty("createDatabaseIfNotExist", "true");
+            ds.addDataSourceProperty("useUnicode", "true");
+            ds.addDataSourceProperty("characterEncoding", "UTF-8");
             System.out.println("Credentials set");
 
-            dataSource.setCreateDatabaseIfNotExist(true);
-            dataSource.setAutoReconnect(true);
             System.out.println("Getting connection");
-            conn = dataSource.getConnection();
+            conn = ds.getConnection();
 
             System.out.println("Connected to DB");
 
@@ -38,14 +40,15 @@ public final class Database {
             ResultSet ranks = rankData.executeQuery("SELECT * FROM ratings");
 
             while(ranks.next()) {
-
                 String name = ranks.getString(1);
-                int rating = Integer.parseInt(ranks.getString(2));
+                double rating = Double.parseDouble(ranks.getString(2));
                 int kills = Integer.parseInt(ranks.getString(3));
                 int deaths = Integer.parseInt(ranks.getString(4));
                 int wins = Integer.parseInt(ranks.getString(5));
                 int losses = Integer.parseInt(ranks.getString(6));
-                PlayerWrapper player = new PlayerWrapper(name, kills, deaths, wins, losses, rating);
+                double rd = Double.parseDouble(ranks.getString(7));
+                double volatility = Double.parseDouble(ranks.getString(8));
+                PlayerWrapper player = new PlayerWrapper(name, kills, deaths, wins, losses, rating, rd, volatility);
                 players.put(name, player);
                 sortedPlayers.add(player);
             }
@@ -84,17 +87,19 @@ public final class Database {
 
     public void addPlayer(String name) {
         try {
-            PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0,1500);
+            PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0, Glicko2.newPlayerRating, Glicko2.newPlayerDeviation, Glicko2.newPlayerVolatility);
             players.put(name, player);
             sortedPlayers.add(player);
             PreparedStatement stmt =
-                    conn.prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?)");
+                    conn.prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)");
             stmt.setString(1, name);
             stmt.setString(2, String.valueOf(player.getRating()));
             stmt.setString(3, String.valueOf(player.getKills()));
             stmt.setString(4, String.valueOf(player.getDeaths()));
             stmt.setString(5, String.valueOf(player.getWins()));
             stmt.setString(6, String.valueOf(player.getLosses()));
+            stmt.setString(7, String.valueOf(player.getDeviation()));
+            stmt.setString(8, String.valueOf(player.getVolatility()));
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
@@ -117,20 +122,17 @@ public final class Database {
 
     public void updateRating(PlayerWrapper playerWrapper) {
         try {
-            int rating = playerWrapper.getRating();
-            int kills = playerWrapper.getKills();
-            int deaths = playerWrapper.getDeaths();
-            int wins = playerWrapper.getWins();
-            int losses = playerWrapper.getLosses();
             PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET rating " + "=" +
-                    " ?, kills = ?, deaths = ?, wins = ?, losses = ?" +
+                    " ?, kills = ?, deaths = ?, wins = ?, losses = ?, rd = ?, volatility = ?" +
                     " WHERE handle = ?");
-            stmt.setString(1, String.valueOf(rating));
-            stmt.setString(2, String.valueOf(kills));
-            stmt.setString(3, String.valueOf(deaths));
-            stmt.setString(4, String.valueOf(wins));
-            stmt.setString(5, String.valueOf(losses));
+            stmt.setString(1, String.valueOf(playerWrapper.getRating()));
+            stmt.setString(2, String.valueOf(playerWrapper.getKills()));
+            stmt.setString(3, String.valueOf(playerWrapper.getDeaths()));
+            stmt.setString(4, String.valueOf(playerWrapper.getWins()));
+            stmt.setString(5, String.valueOf(playerWrapper.getLosses()));
             stmt.setString(6, playerWrapper.getName());
+            stmt.setString(7, String.valueOf(playerWrapper.getDeviation()));
+            stmt.setString(8, String.valueOf(playerWrapper.getVolatility()));
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
@@ -143,8 +145,7 @@ public final class Database {
             PlayerWrapper player = players.get(old);
             players.remove(old);
             sortedPlayers.remove(player);
-            PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getKills(), player.getDeaths(),
-                    player.getWins(), player.getLosses(), player.getRating());
+            PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getKills(), player.getDeaths(), player.getWins(), player.getLosses(), player.getRating(), player.getDeviation(), player.getVolatility());
             players.put(newName, newPlayer);
             sortedPlayers.add(newPlayer);
             PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");

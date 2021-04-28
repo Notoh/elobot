@@ -36,7 +36,7 @@ public class ForceRating extends Command  {
             return;
         }
 
-        playerWrapper.forceRating(rating);
+        playerWrapper.setRating(rating);
         database.updateRating(playerWrapper);
         msg.getChannel().sendMessage("Player " + name + "'s rating forced to " + rating + ".").queue();
     }
