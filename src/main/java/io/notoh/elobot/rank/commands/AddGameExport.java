@@ -110,7 +110,7 @@ public class AddGameExport extends Command {
             PlayerWrapper player = winners.get(i);
             player.playGame(killsWon[i], deathsWon[i], winPct, losersGlicko2);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.getRating()).append(
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : player.getRating()).append(
                     ".").append(".\n");
         }
         double[] winnersGlicko2 = teamGlicko2((double[][]) winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).toArray());
@@ -118,7 +118,7 @@ public class AddGameExport extends Command {
             PlayerWrapper player = losers.get(i);
             player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, winnersGlicko2);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.getRating()).append(
+            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : player.getRating()).append(
                     ".").append(".\n");
         }
         msg.getChannel().sendMessage(builder).queue();

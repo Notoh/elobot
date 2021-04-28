@@ -47,10 +47,6 @@ public class Glicko2 {
     public static final double newPlayerRating = 1500;
     public static final double newPlayerDeviation = 300;
 
-    public static double[] newPlayer() {
-        return glicko1ToGlicko2(newPlayerRating, newPlayerDeviation, newPlayerVolatility);
-    }
-
     public static double g(double deviation) {
         return 1.0 / sqrt(1.0 + 3 * pow(deviation, 2) / pow(PI, 2));
     }
@@ -141,6 +137,14 @@ public class Glicko2 {
         avgRd /= 5;
         avgVolatility /= 5;
         return new double[]{avgRating, avgRd, avgVolatility};
+    }
+
+    public static double updateDeviation(double deviation, double volatility) {
+        deviation = deviation / conversion;
+        for(int i = 0; i < 10; i++) {
+            deviation = sqrt(pow(deviation, 2) + pow(volatility, 2));
+        }
+        return Math.min(newPlayerDeviation, deviation);
     }
 
 }

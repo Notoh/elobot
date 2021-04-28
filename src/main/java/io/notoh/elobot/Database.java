@@ -16,9 +16,10 @@ public final class Database {
     private Connection conn;
     Map<String, Message> messageCache = new HashMap<>();
     private final Map<String, PlayerWrapper> players = new HashMap<>();
-    private final List<PlayerWrapper> sortedPlayers = new ArrayList<>();
+    private final List<PlayerWrapper> sortedPlayers;
 
     public Database(JDA bot) {
+        sortedPlayers = Collections.synchronizedList(new ArrayList<>());
         try {
             System.out.println("Connecting to DB");
             final HikariDataSource ds = new HikariDataSource();
@@ -55,7 +56,7 @@ public final class Database {
             }
 
             rankData.close();
-
+            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> sortedPlayers.forEach(PlayerWrapper::idleDeviation), 7, 7, TimeUnit.DAYS);
         } catch(SQLException e) {
             e.printStackTrace();
         }
@@ -64,7 +65,7 @@ public final class Database {
             System.out.println("Database keep alive.");
             try {
                 Statement rankxd = conn.createStatement();
-                ResultSet rank = rankxd.executeQuery("SELECT * FROM ratings");
+                rankxd.executeQuery("SELECT * FROM ratings");
                 rankxd.close();
             } catch (SQLException exception) {
                 exception.printStackTrace();

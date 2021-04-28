@@ -25,7 +25,7 @@ public final class EloBot {
             JDA bot = JDABuilder.createDefault(Util.TOKEN).build().awaitReady();
             System.out.println("JDA built, starting DB");
             Database database = new Database(bot);
-            MainEventHandler handler = new MainEventHandler(database);
+            MainEventHandler handler = new MainEventHandler();
             bot.addEventListener(handler);
             bot.getPresence().setActivity(Activity.playing("$"));
 
@@ -41,6 +41,7 @@ public final class EloBot {
             handler.addCommand(new Pardon(database));
             handler.addCommand(new Carry(database));
             handler.addCommand(new ForceRating(database));
+            handler.addCommand(new ActualMath(database));
         } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

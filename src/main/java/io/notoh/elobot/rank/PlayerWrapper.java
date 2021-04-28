@@ -116,6 +116,10 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         return new double[]{g1Rating, g1Rd, volatility};
     }
 
+    public void idleDeviation() {
+        g1Rd = glicko2ToGlicko1(new double[]{0, updateDeviation(g1Rd, volatility), 0})[1];
+    }
+
     @Override
     public int compareTo(PlayerWrapper o) {
         if(isProvisional() || o.isProvisional()) {

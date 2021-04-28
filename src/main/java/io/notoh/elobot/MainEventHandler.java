@@ -10,20 +10,14 @@ import java.util.*;
 public class MainEventHandler extends ListenerAdapter {
 
     private final Map<List<String>, Command> commands = new HashMap<>();
-    private final Database ds;
 
-    public MainEventHandler(Database ds) {
-        this.ds = ds;
+    public MainEventHandler() {
     }
 
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
-        if(ds.messageCache.size() >= Util.MESSAGE_CACHE_MAX) {
-            ds.messageCache = new HashMap<>();
-        }
-        ds.messageCache.put(msg.getId(), msg);
         if(msg.getAuthor().isBot()) {
             return;
         }
