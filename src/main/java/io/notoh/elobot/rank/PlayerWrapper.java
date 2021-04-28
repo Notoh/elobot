@@ -100,6 +100,10 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         g1Rating += 20;
     }
 
+    public boolean isProvisional() {
+        return g1Rd < 100;
+    }
+
     public void playGame(int kills, int deaths, double outcome, double[] opponentGlicko2) {
         int perf = Math.toIntExact(Math.round(((0.8 * kills) - deaths) * 0.4));
         double[] glicko1Result = glicko2ToGlicko1(calculateNewRating(glicko1ToGlicko2(g1Rating, g1Rd, volatility), opponentGlicko2, outcome));
@@ -114,6 +118,9 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
     @Override
     public int compareTo(PlayerWrapper o) {
+        if(isProvisional() || o.isProvisional()) {
+            return 0;
+        }
         return (int) (o.g1Rating - g1Rating);
     }
 

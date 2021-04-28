@@ -24,6 +24,7 @@ public final class Database {
             final HikariDataSource ds = new HikariDataSource();
             ds.setUsername(Util.DB_USER);
             ds.setPassword(Util.DB_PASS);
+            ds.setJdbcUrl(Util.DB_URL);
             ds.addDataSourceProperty("autoReconnect", "true");
             ds.addDataSourceProperty("maxReconnects", "10");
             ds.addDataSourceProperty("createDatabaseIfNotExist", "true");

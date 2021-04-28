@@ -32,6 +32,12 @@ public class Rank extends Command {
             msg.getChannel().sendMessage("Player " + name + " does not exist!").queue();
             return;
         }
+
+        if(player.isProvisional()) {
+            msg.getChannel().sendMessage("Player is still in placements.").queue();
+            return;
+        }
+
         List<PlayerWrapper> players = database.getSortedPlayers();
         int rank = players.indexOf(player) + 1;
         int rating = (int) Math.round(player.getRating());

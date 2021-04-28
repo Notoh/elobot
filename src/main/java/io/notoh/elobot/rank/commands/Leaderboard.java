@@ -38,6 +38,7 @@ public class Leaderboard extends Command {
         }
         MessageBuilder builder = new MessageBuilder(); //avoids 2000 char limit
 
+
         builder.append("```\n");
         for(int i = ((page-1) * 40); i < 40 + ((page-1) * 40); i++) {
             if(i > players.size() - 1) {
@@ -45,7 +46,7 @@ public class Leaderboard extends Command {
             }
             PlayerWrapper player = players.get(i);
             builder.append(players.indexOf(player) + 1).append(" - ").append(player.getName()).append(" -" +
-                    " ").append(player.getRating()).append("\n");
+                    " ").append(player.isProvisional() ? "Provisional" : player.getRating()).append("\n");
         }
         builder.append("```");
         msg.getChannel().sendMessage(builder.build()).queue();
