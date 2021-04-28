@@ -27,7 +27,7 @@ public final class EloBot {
             Database database = new Database(bot);
             MainEventHandler handler = new MainEventHandler();
             bot.addEventListener(handler);
-            bot.getPresence().setActivity(Activity.playing("$"));
+            bot.getPresence().setActivity(Activity.playing("CvC Ranked"));
 
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));
