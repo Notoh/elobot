@@ -38,7 +38,7 @@ public class Glicko2 {
         } else if(won == 7) {
             return 0.3;
         } else {
-            return 0.65;
+            return 0.35;
         }
     }
 
