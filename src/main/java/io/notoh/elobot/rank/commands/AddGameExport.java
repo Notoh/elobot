@@ -7,6 +7,7 @@ import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.notoh.elobot.rank.Glicko2.gamePct;
@@ -104,7 +105,11 @@ public class AddGameExport extends Command {
             losers.get(i).addLoss();
         }
         StringBuilder builder = new StringBuilder();
-        double[] losersGlicko2 = teamGlicko2((double[][]) losers.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).toArray());
+        double[] losersGlicko2 = teamGlicko2(losers.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).collect(ArrayList::new, (list, array) -> {
+                    List<Double> list1 = new ArrayList<>();
+                    Arrays.stream(array).forEach(list1::add);
+                    list.add(list1);
+                }, ArrayList::addAll));
         double winPct = gamePct(won, lost);
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = winners.get(i);
@@ -113,7 +118,11 @@ public class AddGameExport extends Command {
             builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : player.getRating()).append(
                     ".").append(".\n");
         }
-        double[] winnersGlicko2 = teamGlicko2((double[][]) winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).toArray());
+        double[] winnersGlicko2 = teamGlicko2(winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).collect(ArrayList::new, (list, array) -> {
+            List<Double> list1 = new ArrayList<>();
+            Arrays.stream(array).forEach(list1::add);
+            list.add(list1);
+        }, ArrayList::addAll));
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
             player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, winnersGlicko2);

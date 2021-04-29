@@ -1,5 +1,6 @@
 package io.notoh.elobot.rank;
 
+import java.util.List;
 import java.util.function.Function;
 
 import static java.lang.Math.*;
@@ -122,16 +123,16 @@ public class Glicko2 {
         return new double[]{newRating, newDeviation, newVolatility};
     }
 
-    public static double[] teamGlicko2(double[][] glicko2s) {
+    public static double[] teamGlicko2(List<List<Double>> glicko2s) {
         //I know averaging RDs / volatilities of a team is stupid when they are logarithmic but if its a problem ill
         // change it
         double avgRating = 0;
         double avgRd = 0;
         double avgVolatility = 0;
-        for(double[] glicko2 : glicko2s) {
-           avgRating += glicko2[0];
-           avgRd += glicko2[1];
-           avgVolatility += glicko2[2];
+        for(List<Double> glicko2 : glicko2s) {
+           avgRating += glicko2.get(0);
+           avgRd += glicko2.get(1);
+           avgVolatility += glicko2.get(2);
         }
         avgRating /= 5;
         avgRd /= 5;
