@@ -6,17 +6,23 @@ import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.JDA;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class Database {
 
     private Connection conn;
-    private final Map<String, PlayerWrapper> players = new HashMap<>();
+    private final Map<String, PlayerWrapper> players;
     private final List<PlayerWrapper> sortedPlayers;
 
+    @SuppressWarnings("ConstantConditions")
     public Database(JDA bot) {
+        players = new ConcurrentHashMap<>();
         sortedPlayers = Collections.synchronizedList(new ArrayList<>());
         try {
             System.out.println("Connecting to DB");

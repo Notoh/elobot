@@ -141,7 +141,7 @@ public class Glicko2 {
 
     public static double updateDeviation(double deviation, double volatility) {
         deviation = deviation / conversion;
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 5; i++) {
             deviation = sqrt(pow(deviation, 2) + pow(volatility, 2));
         }
         return Math.min(newPlayerDeviation, deviation);

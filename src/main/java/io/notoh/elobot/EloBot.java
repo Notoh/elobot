@@ -42,6 +42,8 @@ public final class EloBot {
             handler.addCommand(new Carry(database));
             handler.addCommand(new ForceRating(database));
             handler.addCommand(new ActualMath(database));
+            handler.addCommand(new IdleDeviation(database));
+            handler.addCommand(new ForceDeviation(database));
         } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

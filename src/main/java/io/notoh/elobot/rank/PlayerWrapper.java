@@ -101,7 +101,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     }
 
     public boolean isProvisional() {
-        return g1Rd < 100;
+        return g1Rd > 100;
     }
 
     public void playGame(int kills, int deaths, double outcome, double[] opponentGlicko2) {
