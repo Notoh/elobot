@@ -34,7 +34,7 @@ public class Rank extends Command {
         }
 
         if(player.isProvisional()) {
-            msg.getChannel().sendMessage(name + " is still in placements.").queue();
+            msg.getChannel().sendMessage(name + " is still in placements. RD/σ = " + player.getDeviation() + "/" + player.getVolatility()).queue();
             return;
         }
 

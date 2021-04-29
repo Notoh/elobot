@@ -20,6 +20,7 @@ public class ActualMath extends Command {
     @Override
     public void run(Message msg) {
         if (msg.getMember() == null || !msg.getMember().getId().equals("129712117837332481") || getArguments(msg).length != 1) {
+            msg.getChannel().sendMessage("you must be notoh to use this command").queue();
             return;
         }
         String player = getArguments(msg)[0];

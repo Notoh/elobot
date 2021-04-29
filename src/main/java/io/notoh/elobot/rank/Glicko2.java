@@ -12,7 +12,7 @@ This entire class is me transcribing scala, very ugly and i should just use my s
 public class Glicko2 {
 
     public static double gamePct(int won, int lost) {
-        if(won == 9 && lost < 9) {
+        if(won > lost) {
             if(lost <= 3) {
                 return 1.0;
             } else if(lost == 4) {
@@ -23,22 +23,23 @@ public class Glicko2 {
                 return 0.75;
             } else if(lost == 7) {
                 return 0.7;
+            } else {
+                return 0.65;
             }
         }
-        if(lost == 9 && won < 9) {
-            if(won <= 3) {
-                return 0;
-            } else if(won == 4) {
-                return 0.1;
-            } else if(won == 5) {
-                return 0.2;
-            } else if(won == 6) {
-                return 0.25;
-            } else if(won == 7) {
-                return 0.3;
-            }
+        if(won <= 3) {
+            return 0;
+        } else if(won == 4) {
+            return 0.1;
+        } else if(won == 5) {
+            return 0.2;
+        } else if(won == 6) {
+            return 0.25;
+        } else if(won == 7) {
+            return 0.3;
+        } else {
+            return 0.65;
         }
-        return ((double) won / (double) (won+lost));
     }
 
     private static final double conversion = 173.7178;
