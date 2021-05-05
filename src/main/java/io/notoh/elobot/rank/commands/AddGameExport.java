@@ -2,6 +2,7 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
+import io.notoh.elobot.Util;
 import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
@@ -115,7 +116,7 @@ public class AddGameExport extends Command {
             PlayerWrapper player = winners.get(i);
             player.playGame(killsWon[i], deathsWon[i], winPct, losersGlicko2);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : player.getRating()).append("RD/σ: ").append(player.getDeviation()).append("/").append(player.getVolatility()).append(".").append(".\n");
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : Util.DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
         double[] winnersGlicko2 = teamGlicko2(winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).collect(ArrayList::new, (list, array) -> {
             List<Double> list1 = new ArrayList<>();
@@ -126,7 +127,7 @@ public class AddGameExport extends Command {
             PlayerWrapper player = losers.get(i);
             player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, winnersGlicko2);
             database.updateRating(player);
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : player.getRating()).append("RD/σ: ").append(player.getDeviation()).append("/").append(player.getVolatility()).append(".").append(".\n");
+            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : Util.DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
         msg.getChannel().sendMessage(builder).queue();
     }

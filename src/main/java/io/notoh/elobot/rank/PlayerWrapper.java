@@ -122,8 +122,12 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
 
     @Override
     public int compareTo(PlayerWrapper o) {
-        if(isProvisional() || o.isProvisional()) {
+        if(isProvisional() && o.isProvisional()) {
             return 0;
+        } else if(isProvisional()) {
+            return Integer.MAX_VALUE;
+        } else if(o.isProvisional()) {
+            return Integer.MIN_VALUE;
         }
         return (int) (o.g1Rating - g1Rating);
     }
