@@ -16,17 +16,17 @@ import java.util.concurrent.TimeUnit;
 
 public final class Database {
 
-    private Connection conn;
+    private final HikariDataSource ds;
     private final Map<String, PlayerWrapper> players;
     private final List<PlayerWrapper> sortedPlayers;
 
     @SuppressWarnings("ConstantConditions")
     public Database(JDA bot) {
+        ds = new HikariDataSource();
         players = new ConcurrentHashMap<>();
         sortedPlayers = Collections.synchronizedList(new ArrayList<>());
         try {
             System.out.println("Connecting to DB");
-            final HikariDataSource ds = new HikariDataSource();
             ds.setUsername(Util.DB_USER);
             ds.setPassword(Util.DB_PASS);
             ds.setJdbcUrl(Util.DB_URL);
@@ -38,11 +38,12 @@ public final class Database {
             System.out.println("Credentials set");
 
             System.out.println("Getting connection");
-            conn = ds.getConnection();
+
+            Connection connection = ds.getConnection();
 
             System.out.println("Connected to DB");
 
-            Statement rankData = conn.createStatement();
+            Statement rankData = connection.createStatement();
             ResultSet ranks = rankData.executeQuery("SELECT * FROM ratings");
 
             while(ranks.next()) {
@@ -68,7 +69,7 @@ public final class Database {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             System.out.println("Database keep alive.");
             try {
-                Statement rankxd = conn.createStatement();
+                Statement rankxd = ds.getConnection().createStatement();
                 rankxd.executeQuery("SELECT * FROM ratings");
                 rankxd.close();
             } catch (SQLException exception) {
@@ -79,13 +80,7 @@ public final class Database {
             bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("Keep Alive success!").queue();
         }, 1, 1, TimeUnit.DAYS);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
     }
 
     //TODO make these more consistent in their function i.e. only handle sql calls and the commands handle everything
@@ -96,8 +91,7 @@ public final class Database {
             PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0, Glicko2.newPlayerRating, Glicko2.newPlayerDeviation, Glicko2.newPlayerVolatility);
             players.put(name, player);
             sortedPlayers.add(player);
-            PreparedStatement stmt =
-                    conn.prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = ds.getConnection().prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)");
             stmt.setString(1, name);
             stmt.setString(2, String.valueOf(player.getRating()));
             stmt.setString(3, String.valueOf(player.getKills()));
@@ -117,7 +111,7 @@ public final class Database {
         try {
             sortedPlayers.remove(players.get(name));
             players.remove(name);
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM ratings WHERE handle = ?");
+            PreparedStatement stmt = ds.getConnection().prepareStatement("DELETE FROM ratings WHERE handle = ?");
             stmt.setString(1, name);
             stmt.execute();
             stmt.close();
@@ -128,7 +122,7 @@ public final class Database {
 
     public void updateRating(PlayerWrapper playerWrapper) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET rating " + "=" +
+            PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET rating =" +
                     " ?, kills = ?, deaths = ?, wins = ?, losses = ?, rd = ?, volatility = ?" +
                     " WHERE handle = ?");
             stmt.setString(1, String.valueOf(playerWrapper.getRating()));
@@ -154,7 +148,7 @@ public final class Database {
             PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getKills(), player.getDeaths(), player.getWins(), player.getLosses(), player.getRating(), player.getDeviation(), player.getVolatility());
             players.put(newName, newPlayer);
             sortedPlayers.add(newPlayer);
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
+            PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
             stmt.setString(1, newName);
             stmt.setString(2, old);
             stmt.execute();
