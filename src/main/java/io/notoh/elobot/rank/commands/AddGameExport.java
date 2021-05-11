@@ -2,17 +2,16 @@ package io.notoh.elobot.rank.commands;
 
 import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
-import io.notoh.elobot.Util;
-import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
+import static io.notoh.elobot.Util.DECIMAL_FORMAT;
 import static io.notoh.elobot.rank.Glicko2.gamePct;
-import static io.notoh.elobot.rank.Glicko2.teamGlicko2;
+import static io.notoh.elobot.rank.Glicko2.getComparisonRatings;
 
 public class AddGameExport extends Command {
 
@@ -106,28 +105,36 @@ public class AddGameExport extends Command {
             losers.get(i).addLoss();
         }
         StringBuilder builder = new StringBuilder();
-        double[] losersGlicko2 = teamGlicko2(losers.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).collect(ArrayList::new, (list, array) -> {
-                    List<Double> list1 = new ArrayList<>();
-                    Arrays.stream(array).forEach(list1::add);
-                    list.add(list1);
-                }, ArrayList::addAll));
+
+        Comparator<? super PlayerWrapper> comparator = (player1, player2) -> (int) (player2.getRating() - player1.getRating());
+
+        winners.sort(comparator);
+        losers.sort(comparator);
+
+        double avgWinners = winners.stream().mapToDouble(PlayerWrapper::getRating).average().orElseThrow(AssertionError::new);
+        double avgLosers = losers.stream().mapToDouble(PlayerWrapper::getRating).average().orElseThrow(AssertionError::new);
+
         double winPct = gamePct(won, lost);
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = winners.get(i);
-            player.playGame(killsWon[i], deathsWon[i], winPct, losersGlicko2);
+
+            double avgW = ((avgWinners * 5) - player.getRating()) / 4;
+            double avgL = ((avgLosers * 5) - losers.get(i).getRating()) / 4;
+
+            player.playGame(killsWon[i], deathsWon[i], winPct, getComparisonRatings(player.getGlicko(), avgW, losers.get(i).getGlicko(), avgL));
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : Util.DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
-        double[] winnersGlicko2 = teamGlicko2(winners.stream().map(PlayerWrapper::getGlicko).map(Glicko2::glicko1ToGlicko2).collect(ArrayList::new, (list, array) -> {
-            List<Double> list1 = new ArrayList<>();
-            Arrays.stream(array).forEach(list1::add);
-            list.add(list1);
-        }, ArrayList::addAll));
+
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
-            player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, winnersGlicko2);
+
+            double avgL = ((avgLosers * 5) - player.getRating()) / 4;
+            double avgW = ((avgWinners * 5) - winners.get(i).getRating()) / 4;
+
+            player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, getComparisonRatings(player.getGlicko(), avgL, winners.get(i).getGlicko(), avgW));
             database.updateRating(player);
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : Util.DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(Util.DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
         msg.getChannel().sendMessage(builder).queue();
     }

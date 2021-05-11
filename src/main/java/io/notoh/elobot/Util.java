@@ -29,4 +29,12 @@ public class Util {
                 "klammbud","canadianave","dillaware","_icethea_","zhal","xephyisrip","odinleader","ssupersaiyan",
                 "kellyfornia","freealcohol", "frqk", "drahyrt"));
     }
+
+    public static double average(double[] avg) {
+        double i = 0;
+        for(double d : avg) {
+            i += d;
+        }
+        return i / avg.length;
+    }
 }

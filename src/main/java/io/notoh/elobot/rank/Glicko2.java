@@ -149,4 +149,11 @@ public class Glicko2 {
         return Math.min(newPlayerDeviation, deviation);
     }
 
+    
+    public static double[] getComparisonRatings(double[] playerGlicko1, double teamGlicko1Ratings,
+                                                double[] equivPlayerGlicko1, double opponentGlicko1Ratings) {
+        double selfRating = 1500 + playerGlicko1[0] - opponentGlicko1Ratings;
+        double opponentRating = 1500 + equivPlayerGlicko1[0] - teamGlicko1Ratings;
+        return new double[]{selfRating, playerGlicko1[1], opponentRating, equivPlayerGlicko1[1]};
+    }
 }
