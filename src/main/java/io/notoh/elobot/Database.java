@@ -35,6 +35,10 @@ public final class Database {
             ds.addDataSourceProperty("createDatabaseIfNotExist", "true");
             ds.addDataSourceProperty("useUnicode", "true");
             ds.addDataSourceProperty("characterEncoding", "UTF-8");
+            ds.addDataSourceProperty("cachePrepStmts", "true");
+            ds.addDataSourceProperty("prepStmtCacheSize", "250");
+            ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
             System.out.println("Credentials set");
 
             System.out.println("Getting connection");
