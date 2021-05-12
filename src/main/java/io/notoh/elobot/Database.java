@@ -19,9 +19,11 @@ public final class Database {
     private final HikariDataSource ds;
     private final Map<String, PlayerWrapper> players;
     private final List<PlayerWrapper> sortedPlayers;
+    private final JDA bot;
 
     @SuppressWarnings("ConstantConditions")
     public Database(JDA bot) {
+        this.bot = bot;
         ds = new HikariDataSource();
         players = new ConcurrentHashMap<>();
         sortedPlayers = Collections.synchronizedList(new ArrayList<>());
@@ -47,24 +49,26 @@ public final class Database {
 
             System.out.println("Connected to DB");
 
-            Statement rankData = connection.createStatement();
-            ResultSet ranks = rankData.executeQuery("SELECT * FROM ratings");
+            synchronized (this) {
+                Statement rankData = connection.createStatement();
+                ResultSet ranks = rankData.executeQuery("SELECT * FROM ratings");
 
-            while(ranks.next()) {
-                String name = ranks.getString(1);
-                double rating = Double.parseDouble(ranks.getString(2));
-                int kills = Integer.parseInt(ranks.getString(3));
-                int deaths = Integer.parseInt(ranks.getString(4));
-                int wins = Integer.parseInt(ranks.getString(5));
-                int losses = Integer.parseInt(ranks.getString(6));
-                double rd = Double.parseDouble(ranks.getString(7));
-                double volatility = Double.parseDouble(ranks.getString(8));
-                PlayerWrapper player = new PlayerWrapper(name, kills, deaths, wins, losses, rating, rd, volatility);
-                players.put(name, player);
-                sortedPlayers.add(player);
+                while(ranks.next()) {
+                    String name = ranks.getString(1);
+                    double rating = Double.parseDouble(ranks.getString(2));
+                    int kills = Integer.parseInt(ranks.getString(3));
+                    int deaths = Integer.parseInt(ranks.getString(4));
+                    int wins = Integer.parseInt(ranks.getString(5));
+                    int losses = Integer.parseInt(ranks.getString(6));
+                    double rd = Double.parseDouble(ranks.getString(7));
+                    double volatility = Double.parseDouble(ranks.getString(8));
+                    PlayerWrapper player = new PlayerWrapper(name, kills, deaths, wins, losses, rating, rd, volatility);
+                    players.put(name, player);
+                    sortedPlayers.add(player);
+                }
+
+                rankData.close();
             }
-
-            rankData.close();
             Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> sortedPlayers.forEach(PlayerWrapper::idleDeviation), 7, 7, TimeUnit.DAYS);
         } catch(SQLException e) {
             e.printStackTrace();
@@ -72,16 +76,13 @@ public final class Database {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             System.out.println("Database keep alive.");
-            try {
-                Statement rankxd = ds.getConnection().createStatement();
+            try(Statement rankxd = ds.getConnection().createStatement()) {
                 rankxd.executeQuery("SELECT * FROM ratings");
-                rankxd.close();
+                bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("Keep Alive success!").queue();
             } catch (SQLException exception) {
                 exception.printStackTrace();
-                bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> sql exception debug flag " +
-                        "raised").queue();
+                error();
             }
-            bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("Keep Alive success!").queue();
         }, 1, 1, TimeUnit.DAYS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
@@ -90,12 +91,11 @@ public final class Database {
     //TODO make these more consistent in their function i.e. only handle sql calls and the commands handle everything
     // else as opposed to this weird mixed shit
 
-    public void addPlayer(String name) {
-        try {
+    public synchronized void addPlayer(String name) {
+        try(PreparedStatement stmt = ds.getConnection().prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)")) {
             PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0, Glicko2.newPlayerRating, Glicko2.newPlayerDeviation, Glicko2.newPlayerVolatility);
             players.put(name, player);
             sortedPlayers.add(player);
-            PreparedStatement stmt = ds.getConnection().prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)");
             stmt.setString(1, name);
             stmt.setString(2, String.valueOf(player.getRating()));
             stmt.setString(3, String.valueOf(player.getKills()));
@@ -105,30 +105,28 @@ public final class Database {
             stmt.setString(7, String.valueOf(player.getDeviation()));
             stmt.setString(8, String.valueOf(player.getVolatility()));
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            error();
         }
     }
 
-    public void deletePlayer(String name) {
-        try {
+    public synchronized void deletePlayer(String name) {
+        try(PreparedStatement stmt = ds.getConnection().prepareStatement("DELETE FROM ratings WHERE handle = ?")) {
             sortedPlayers.remove(players.get(name));
             players.remove(name);
-            PreparedStatement stmt = ds.getConnection().prepareStatement("DELETE FROM ratings WHERE handle = ?");
             stmt.setString(1, name);
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            error();
         }
     }
 
-    public void updateRating(PlayerWrapper playerWrapper) {
-        try {
-            PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET rating =" +
-                    " ?, kills = ?, deaths = ?, wins = ?, losses = ?, rd = ?, volatility = ?" +
-                    " WHERE handle = ?");
+    public synchronized void updateRating(PlayerWrapper playerWrapper) {
+        try(PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET rating =" +
+                " ?, kills = ?, deaths = ?, wins = ?, losses = ?, rd = ?, volatility = ?" +
+                " WHERE handle = ?")) {
             stmt.setString(1, String.valueOf(playerWrapper.getRating()));
             stmt.setString(2, String.valueOf(playerWrapper.getKills()));
             stmt.setString(3, String.valueOf(playerWrapper.getDeaths()));
@@ -138,28 +136,33 @@ public final class Database {
             stmt.setString(7, String.valueOf(playerWrapper.getDeviation()));
             stmt.setString(8, String.valueOf(playerWrapper.getVolatility()));
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            error();
         }
     }
 
-    public void changeName(String old, String newName) {
-        try {
+    public synchronized void changeName(String old, String newName) {
+        try(PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?")) {
             PlayerWrapper player = players.get(old);
             players.remove(old);
             sortedPlayers.remove(player);
             PlayerWrapper newPlayer = new PlayerWrapper(newName, player.getKills(), player.getDeaths(), player.getWins(), player.getLosses(), player.getRating(), player.getDeviation(), player.getVolatility());
             players.put(newName, newPlayer);
             sortedPlayers.add(newPlayer);
-            PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?");
             stmt.setString(1, newName);
             stmt.setString(2, old);
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            error();
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void error() {
+        bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("<@129712117837332481> sql exception debug flag " +
+                "raised").queue();
     }
 
     public List<PlayerWrapper> getSortedPlayers() {
