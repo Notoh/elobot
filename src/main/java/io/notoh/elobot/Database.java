@@ -1,6 +1,6 @@
 package io.notoh.elobot;
 
-import com.zaxxer.hikari.HikariDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.notoh.elobot.rank.Glicko2;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.JDA;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class Database {
 
-    private final HikariDataSource ds;
+    private Connection connection;
     private final Map<String, PlayerWrapper> players;
     private final List<PlayerWrapper> sortedPlayers;
     private final JDA bot;
@@ -24,28 +24,21 @@ public final class Database {
     @SuppressWarnings("ConstantConditions")
     public Database(JDA bot) {
         this.bot = bot;
-        ds = new HikariDataSource();
         players = new ConcurrentHashMap<>();
         sortedPlayers = Collections.synchronizedList(new ArrayList<>());
         try {
             System.out.println("Connecting to DB");
-            ds.setUsername(Util.DB_USER);
-            ds.setPassword(Util.DB_PASS);
-            ds.setJdbcUrl(Util.DB_URL);
-            ds.addDataSourceProperty("autoReconnect", "true");
-            ds.addDataSourceProperty("maxReconnects", "10");
-            ds.addDataSourceProperty("createDatabaseIfNotExist", "true");
-            ds.addDataSourceProperty("useUnicode", "true");
-            ds.addDataSourceProperty("characterEncoding", "UTF-8");
-            ds.addDataSourceProperty("cachePrepStmts", "true");
-            ds.addDataSourceProperty("prepStmtCacheSize", "250");
-            ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            MysqlDataSource dataSource = new MysqlDataSource();
+            dataSource.setUser(Util.DB_USER);
+            dataSource.setPassword(Util.DB_PASS);
+            dataSource.setURL(Util.DB_URL);
 
             System.out.println("Credentials set");
 
+            dataSource.setCreateDatabaseIfNotExist(true);
+            dataSource.setAutoReconnect(true);
             System.out.println("Getting connection");
-
-            Connection connection = ds.getConnection();
+            connection = dataSource.getConnection();
 
             System.out.println("Connected to DB");
 
@@ -76,7 +69,7 @@ public final class Database {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             System.out.println("Database keep alive.");
-            try(Statement rankxd = ds.getConnection().createStatement()) {
+            try(Statement rankxd = connection.createStatement()) {
                 rankxd.executeQuery("SELECT * FROM ratings");
                 bot.getTextChannelById(Util.CHANNEL_ID).sendMessage("Keep Alive success!").queue();
             } catch (SQLException exception) {
@@ -85,14 +78,20 @@ public final class Database {
             }
         }, 1, 1, TimeUnit.DAYS);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     //TODO make these more consistent in their function i.e. only handle sql calls and the commands handle everything
     // else as opposed to this weird mixed shit
 
     public synchronized void addPlayer(String name) {
-        try(PreparedStatement stmt = ds.getConnection().prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)")) {
+        try(PreparedStatement stmt = connection.prepareStatement("INSERT INTO ratings VALUES (?,?,?,?,?,?,?,?)")) {
             PlayerWrapper player = new PlayerWrapper(name, 0,0,0,0, Glicko2.newPlayerRating, Glicko2.newPlayerDeviation, Glicko2.newPlayerVolatility);
             players.put(name, player);
             sortedPlayers.add(player);
@@ -112,7 +111,7 @@ public final class Database {
     }
 
     public synchronized void deletePlayer(String name) {
-        try(PreparedStatement stmt = ds.getConnection().prepareStatement("DELETE FROM ratings WHERE handle = ?")) {
+        try(PreparedStatement stmt = connection.prepareStatement("DELETE FROM ratings WHERE handle = ?")) {
             sortedPlayers.remove(players.get(name));
             players.remove(name);
             stmt.setString(1, name);
@@ -124,7 +123,7 @@ public final class Database {
     }
 
     public synchronized void updateRating(PlayerWrapper playerWrapper) {
-        try(PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET rating =" +
+        try(PreparedStatement stmt = connection.prepareStatement("UPDATE ratings SET rating =" +
                 " ?, kills = ?, deaths = ?, wins = ?, losses = ?, rd = ?, volatility = ?" +
                 " WHERE handle = ?")) {
             stmt.setString(1, String.valueOf(playerWrapper.getRating()));
@@ -143,7 +142,7 @@ public final class Database {
     }
 
     public synchronized void changeName(String old, String newName) {
-        try(PreparedStatement stmt = ds.getConnection().prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?")) {
+        try(PreparedStatement stmt = connection.prepareStatement("UPDATE ratings SET handle = ? WHERE handle = ?")) {
             PlayerWrapper player = players.get(old);
             players.remove(old);
             sortedPlayers.remove(player);
