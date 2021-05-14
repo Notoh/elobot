@@ -4,6 +4,7 @@ import io.notoh.elobot.Command;
 import io.notoh.elobot.Database;
 import io.notoh.elobot.rank.PlayerWrapper;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,9 +29,13 @@ public class AddGameExport extends Command {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }
+        execute(msg, msg.getChannel());
+    }
+
+    public void execute(Message msg, MessageChannel toSend) {
         String[] args = getArguments(msg);
         if(args.length != 59) {
-            msg.getChannel().sendMessage("Invalid format!").queue();
+            toSend.sendMessage("Invalid format!").queue();
             return;
         }
         int roundsA = Integer.parseInt(args[6]);
@@ -136,6 +141,6 @@ public class AddGameExport extends Command {
             database.updateRating(player);
             builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
-        msg.getChannel().sendMessage(builder).queue();
+        toSend.sendMessage(builder).queue();
     }
 }

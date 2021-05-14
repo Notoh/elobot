@@ -40,7 +40,7 @@ public class ImportChannel extends Command {
             if(!checkReactions(message, args[2])) {
                 continue;
             }
-            addGameExport.run(message);
+            addGameExport.execute(message, msg.getChannel());
             msg.getChannel().sendMessage("Message id loaded " + message.getId()).queue();
         }
     }
