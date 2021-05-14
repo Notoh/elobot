@@ -29,9 +29,11 @@ public final class EloBot {
             bot.addEventListener(handler);
             bot.getPresence().setActivity(Activity.playing("CvC Ranked"));
 
+            AddGameExport gameExport = new AddGameExport(database);
+            handler.addCommand(gameExport);
+            handler.addCommand(new ImportChannel(gameExport));
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));
-            handler.addCommand(new AddGameExport(database));
             handler.addCommand(new DeletePlayer(database));
             handler.addCommand(new Leaderboard(database));
             handler.addCommand(new Help());
