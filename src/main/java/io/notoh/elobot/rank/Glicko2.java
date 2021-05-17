@@ -12,33 +12,9 @@ public class Glicko2 {
 
     public static double gamePct(int won, int lost) {
         if(won > lost) {
-            if(lost <= 3) {
-                return 1.0;
-            } else if(lost == 4) {
-                return 0.9;
-            } else if(lost == 5) {
-                return 0.8;
-            } else if(lost == 6) {
-                return 0.75;
-            } else if(lost == 7) {
-                return 0.7;
-            } else {
-                return 0.65;
-            }
+            return won-lost > 3 ? 1 : 0.8;
         }
-        if(won <= 3) {
-            return 0;
-        } else if(won == 4) {
-            return 0.1;
-        } else if(won == 5) {
-            return 0.2;
-        } else if(won == 6) {
-            return 0.25;
-        } else if(won == 7) {
-            return 0.3;
-        } else {
-            return 0.35;
-        }
+        return won-lost > 3 ? 0 : 0.2;
     }
 
     private static final double conversion = 173.7178;

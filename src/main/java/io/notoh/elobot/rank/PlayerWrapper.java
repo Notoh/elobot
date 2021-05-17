@@ -117,7 +117,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     }
 
     public void playGame(double outcome, double[] glicko1) {
-        int perf = Math.min(15, Math.toIntExact(Math.round(((0.8 * tempKills) - tempDeaths) * 0.33)));
+        double perf = Math.min(15, ((0.8 * tempKills) - tempDeaths) * 0.5);
         double[] glicko1Result = glicko2ToGlicko1(calculateNewRating(glicko1ToGlicko2(glicko1[0], g1Rd, volatility),
                 glicko1ToGlicko2(new double[]{glicko1[2], glicko1[3], Glicko2.newPlayerVolatility}), outcome));
         this.setRating(g1Rating + (glicko1Result[0] - glicko1[0]) + perf);
