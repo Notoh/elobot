@@ -127,7 +127,8 @@ public class AddGameExport extends Command {
 
             player.playGame(killsWon[i], deathsWon[i], winPct, getComparisonRatings(player.getGlicko(), avgW, losers.get(i).getGlicko(), avgL));
             database.updateRating(player);
-            builder.append("Updated player ").append(namesWon[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
+                    "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
 
         for(int i = 0; i < 5; i++) {
@@ -138,7 +139,8 @@ public class AddGameExport extends Command {
 
             player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, getComparisonRatings(player.getGlicko(), avgL, winners.get(i).getGlicko(), avgW));
             database.updateRating(player);
-            builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
+                    "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
         toSend.sendMessage(builder).queue();
         return true;
