@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageHistory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ImportChannel extends Command {
@@ -23,7 +25,7 @@ public class ImportChannel extends Command {
         }
         String[] args = getArguments(msg);
         if(args.length != 3) {
-            msg.getChannel().sendMessage("Format: -r <id> <beginning_msg_id> <exclude_reaction>").queue();
+            msg.getChannel().sendMessage("Format: -importchannel <id> <beginning_msg_id> <exclude_reaction>").queue();
             return;
         }
 
@@ -32,16 +34,22 @@ public class ImportChannel extends Command {
             msg.getChannel().sendMessage("Cannot find channel").queue();
             return;
         }
-        MessageHistory history = channel.getHistoryAfter(args[1], 100).complete();
 
-        List<Message> messages = history.getRetrievedHistory();
+        msg.getChannel().sendMessage("Requesting history").queue();
+        MessageHistory history = channel.getHistoryAfter(args[1], 100).complete();
+        msg.getChannel().sendMessage("History retrieved").queue();
+
+        List<Message> messages = new ArrayList<>(history.getRetrievedHistory());
+        Collections.reverse(messages);
 
         for(Message message : messages) {
-            if(!checkReactions(message, args[2])) {
+            if(checkReactions(message, args[2])) {
                 continue;
             }
-            addGameExport.execute(message, msg.getChannel());
             msg.getChannel().sendMessage("Message id loaded " + message.getId()).queue();
+            if(!addGameExport.execute(message.getContentRaw().replace("`", "").split("\\s+"), msg.getChannel())) {
+                break;
+            }
         }
     }
 

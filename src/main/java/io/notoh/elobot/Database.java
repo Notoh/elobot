@@ -65,6 +65,7 @@ public final class Database {
             Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> sortedPlayers.forEach(PlayerWrapper::idleDeviation), 7, 7, TimeUnit.DAYS);
         } catch(SQLException e) {
             e.printStackTrace();
+            error();
         }
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
@@ -83,6 +84,7 @@ public final class Database {
                 connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+                error();
             }
         }));
     }
@@ -131,9 +133,9 @@ public final class Database {
             stmt.setString(3, String.valueOf(playerWrapper.getDeaths()));
             stmt.setString(4, String.valueOf(playerWrapper.getWins()));
             stmt.setString(5, String.valueOf(playerWrapper.getLosses()));
-            stmt.setString(6, playerWrapper.getName());
-            stmt.setString(7, String.valueOf(playerWrapper.getDeviation()));
-            stmt.setString(8, String.valueOf(playerWrapper.getVolatility()));
+            stmt.setString(6, String.valueOf(playerWrapper.getDeviation()));
+            stmt.setString(7, String.valueOf(playerWrapper.getVolatility()));
+            stmt.setString(8, playerWrapper.getName());
             stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();

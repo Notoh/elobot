@@ -29,14 +29,13 @@ public class AddGameExport extends Command {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }
-        execute(msg, msg.getChannel());
+        execute(getArguments(msg), msg.getChannel());
     }
 
-    public void execute(Message msg, MessageChannel toSend) {
-        String[] args = getArguments(msg);
+    public boolean execute(String[] args, MessageChannel toSend) {
         if(args.length != 59) {
             toSend.sendMessage("Invalid format!").queue();
-            return;
+            return false;
         }
         int roundsA = Integer.parseInt(args[6]);
         int roundsB = Integer.parseInt(args[33]);
@@ -72,14 +71,14 @@ public class AddGameExport extends Command {
         }
         for(String name : namesWon) {
             if(database.getPlayers().get(name) == null) {
-                msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
-                return;
+                toSend.sendMessage("Player " + name + " does not exist! Cancelling.").queue();
+                return false;
             }
         }
         for(String name : namesLost) {
             if(database.getPlayers().get(name) == null) {
-                msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
-                return;
+                toSend.sendMessage("Player " + name + " does not exist! Cancelling.").queue();
+                return false;
             }
         }
         int[] killsWon = new int[5];
@@ -142,5 +141,6 @@ public class AddGameExport extends Command {
             builder.append("Updated player ").append(namesLost[i]).append(". New rating: ").append(player.isProvisional() ? "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
         }
         toSend.sendMessage(builder).queue();
+        return true;
     }
 }

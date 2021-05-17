@@ -16,11 +16,15 @@ public abstract class Command {
     public abstract void run(Message msg);
 
     public String[] getArguments(Message msg) {
-        int cut = msg.getContentRaw().indexOf(' ') + 1;
+        return getArguments(msg.getContentRaw());
+    }
+
+    public String[] getArguments(String msg) {
+        int cut = msg.indexOf(' ') + 1;
         if (cut == 0) {
-            return new String[]{};
+            return new String[] {};
         }
-        return msg.getContentRaw().substring(cut).split("\\s+");
+        return msg.substring(cut).split("\\s+");
     }
 
     public boolean checkPermission(Member member) {
