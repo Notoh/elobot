@@ -98,14 +98,14 @@ public class AddGameExport extends Command {
         List<PlayerWrapper> losers = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             winners.add(database.getPlayers().get(namesWon[i]));
-            winners.get(i).addKills(killsWon[i]);
-            winners.get(i).addDeaths(deathsWon[i]);
+            winners.get(i).addKillsAndSetTemp(killsWon[i]);
+            winners.get(i).addDeathsAndSetTemp(deathsWon[i]);
             winners.get(i).addWin();
         }
         for(int i = 0; i < 5; i++) {
             losers.add(database.getPlayers().get(namesLost[i]));
-            losers.get(i).addKills(killsLost[i]);
-            losers.get(i).addDeaths(deathsLost[i]);
+            losers.get(i).addKillsAndSetTemp(killsLost[i]);
+            losers.get(i).addDeathsAndSetTemp(deathsLost[i]);
             losers.get(i).addLoss();
         }
         StringBuilder builder = new StringBuilder();
@@ -125,7 +125,7 @@ public class AddGameExport extends Command {
             double avgW = ((avgWinners * 5) - player.getRating()) / 4;
             double avgL = ((avgLosers * 5) - losers.get(i).getRating()) / 4;
 
-            player.playGame(killsWon[i], deathsWon[i], winPct, getComparisonRatings(player.getGlicko(), avgW, losers.get(i).getGlicko(), avgL));
+            player.playGame(winPct, getComparisonRatings(player.getGlicko(), avgW, losers.get(i).getGlicko(), avgL));
             database.updateRating(player);
             builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
                     "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
@@ -137,7 +137,7 @@ public class AddGameExport extends Command {
             double avgL = ((avgLosers * 5) - player.getRating()) / 4;
             double avgW = ((avgWinners * 5) - winners.get(i).getRating()) / 4;
 
-            player.playGame(killsLost[i], deathsLost[i], 1.0-winPct, getComparisonRatings(player.getGlicko(), avgL, winners.get(i).getGlicko(), avgW));
+            player.playGame(1.0-winPct, getComparisonRatings(player.getGlicko(), avgL, winners.get(i).getGlicko(), avgW));
             database.updateRating(player);
             builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
                     "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
