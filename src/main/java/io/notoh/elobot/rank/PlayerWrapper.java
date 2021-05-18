@@ -36,7 +36,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     }
 
     public void addDeathsAndSetTemp(int deaths) {
-        this.deaths = deaths;
+        this.deaths += deaths;
         this.tempDeaths = deaths;
     }
 

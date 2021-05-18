@@ -14,7 +14,7 @@ public class Glicko2 {
         if(won > lost) {
             return won-lost > 3 ? 1 : 0.8;
         }
-        return won-lost > 3 ? 0 : 0.2;
+        return lost-won > 3 ? 0 : 0.2;
     }
 
     private static final double conversion = 173.7178;
