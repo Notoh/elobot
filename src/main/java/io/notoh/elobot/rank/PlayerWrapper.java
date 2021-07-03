@@ -22,14 +22,6 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         rating += 5;
     }
 
-    public void addKills(int kills) {
-        this.kills += kills;
-    }
-
-    public void addDeaths(int deaths) {
-        this.deaths += deaths;
-    }
-
     public double getKDA() {
         return (double) kills / (double) deaths;
     }
@@ -76,6 +68,10 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         } else {
             losses++;
         }
+
+        this.kills += kills;
+        this.deaths += deaths;
+
         int cozyElo = (kills-deaths) + (won ? 12 : -12);
 
         if(wins + losses < 100) {
@@ -87,10 +83,14 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
     }
 
     public void invertGame(boolean won, int kills, int deaths) {
+        this.kills -= kills;
+        this.deaths -= deaths;
+
         int cozyElo = (kills-deaths) + (won ? 12 : -12);
 
         if(wins + losses < 100) {
             rating -= cozyElo;
+            return;
         }
 
         rating -= ((int) Math.round((rating - 1500 + cozyElo)*(double)(100/wins+losses)));
