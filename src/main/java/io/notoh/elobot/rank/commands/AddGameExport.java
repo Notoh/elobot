@@ -7,12 +7,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static io.notoh.elobot.Util.DECIMAL_FORMAT;
-import static io.notoh.elobot.rank.Glicko2.gamePct;
-import static io.notoh.elobot.rank.Glicko2.getComparisonRatings;
 
 public class AddGameExport extends Command {
 
@@ -29,10 +26,10 @@ public class AddGameExport extends Command {
             msg.getChannel().sendMessage("No permission!").queue();
             return;
         }
-        execute(getArguments(msg), msg.getChannel());
+        execute(getArguments(msg), msg.getChannel(), false);
     }
 
-    public boolean execute(String[] args, MessageChannel toSend) {
+    public boolean execute(String[] args, MessageChannel toSend, boolean invert) {
         if(args.length != 59) {
             toSend.sendMessage("Invalid format!").queue();
             return false;
@@ -40,7 +37,6 @@ public class AddGameExport extends Command {
         int roundsA = Integer.parseInt(args[6]);
         int roundsB = Integer.parseInt(args[33]);
         int won = Math.max(roundsA, roundsB);
-        int lost = Math.min(roundsA, roundsB);
         String[] namesWon = new String[5];
         String[] namesLost = new String[5];
         int startIndexWin = won == roundsA ? 7 : 34;
@@ -98,49 +94,33 @@ public class AddGameExport extends Command {
         List<PlayerWrapper> losers = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             winners.add(database.getPlayers().get(namesWon[i]));
-            winners.get(i).addKillsAndSetTemp(killsWon[i]);
-            winners.get(i).addDeathsAndSetTemp(deathsWon[i]);
-            winners.get(i).addWin();
         }
         for(int i = 0; i < 5; i++) {
             losers.add(database.getPlayers().get(namesLost[i]));
-            losers.get(i).addKillsAndSetTemp(killsLost[i]);
-            losers.get(i).addDeathsAndSetTemp(deathsLost[i]);
-            losers.get(i).addLoss();
         }
         StringBuilder builder = new StringBuilder();
-
-        Comparator<? super PlayerWrapper> comparator = (player1, player2) -> (int) (player2.getRating() - player1.getRating());
-
-        winners.sort(comparator);
-        losers.sort(comparator);
-
-        double avgWinners = winners.stream().mapToDouble(PlayerWrapper::getRating).average().orElseThrow(AssertionError::new);
-        double avgLosers = losers.stream().mapToDouble(PlayerWrapper::getRating).average().orElseThrow(AssertionError::new);
-
-        double winPct = gamePct(won, lost);
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = winners.get(i);
 
-            double avgW = ((avgWinners * 5) - player.getRating()) / 4;
-            double avgL = ((avgLosers * 5) - losers.get(i).getRating()) / 4;
-
-            player.playGame(winPct, getComparisonRatings(player.getGlicko(), avgW, losers.get(i).getGlicko(), avgL));
+            if(invert) {
+                player.invertGame(true, killsWon[i], deathsWon[i]);
+            } else {
+                player.playGame(true, killsWon[i], deathsWon[i]);
+            }
             database.updateRating(player);
-            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
-                    "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(DECIMAL_FORMAT.format(player.getRating())).append(".").append("\n");
         }
 
         for(int i = 0; i < 5; i++) {
             PlayerWrapper player = losers.get(i);
 
-            double avgL = ((avgLosers * 5) - player.getRating()) / 4;
-            double avgW = ((avgWinners * 5) - winners.get(i).getRating()) / 4;
-
-            player.playGame(1.0-winPct, getComparisonRatings(player.getGlicko(), avgL, winners.get(i).getGlicko(), avgW));
+            if(invert) {
+                player.invertGame(false, killsLost[i], deathsLost[i]);
+            } else {
+                player.playGame(false, killsLost[i], deathsLost[i]);
+            }
             database.updateRating(player);
-            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(player.isProvisional() ?
-                    "Provisional" : DECIMAL_FORMAT.format(player.getRating())).append(" RD: ").append(DECIMAL_FORMAT.format(player.getDeviation())).append(".").append(".\n");
+            builder.append("Updated player ").append(player.getName()).append(". New rating: ").append(DECIMAL_FORMAT.format(player.getRating())).append(".").append("\n");
         }
         toSend.sendMessage(builder).queue();
         return true;

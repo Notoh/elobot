@@ -46,8 +46,7 @@ public class Leaderboard extends Command {
                 break;
             }
             PlayerWrapper player = players.get(i);
-            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getName()).append(" - ").append(player.isProvisional() ? "Provisional" :
-                    Util.DECIMAL_FORMAT.format(player.getRating())).append("\n");
+            builder.append(players.indexOf(player) + 1).append(" - ").append(player.getName()).append(" - ").append(Util.DECIMAL_FORMAT.format(player.getRating())).append("\n");
         }
         builder.append("```");
         msg.getChannel().sendMessage(builder.build()).queue();

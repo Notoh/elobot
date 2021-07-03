@@ -32,7 +32,7 @@ public class Captains extends Command {
                 msg.getChannel().sendMessage("Player " + name + " does not exist! Cancelling.").queue();
                 return;
             }
-            boolean isValid = !player.isProvisional() || Util.validCaptains.contains(name.toLowerCase());
+            boolean isValid = player.getWins() + player.getLosses() > 15 || Util.validCaptains.contains(name.toLowerCase());
             if(!isValid)
                 continue;
             double rating = player.getRating();

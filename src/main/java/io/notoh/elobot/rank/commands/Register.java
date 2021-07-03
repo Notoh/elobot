@@ -30,7 +30,6 @@ public class Register extends Command {
             return;
         }
         ds.addPlayer(name);
-        msg.getChannel().sendMessage("Player " + name + " added. To see your rating, you must play placements until " +
-                "your RD is less than 100.").queue();
+        msg.getChannel().sendMessage("Player " + name + " added.").queue();
     }
 }

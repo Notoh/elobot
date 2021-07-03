@@ -32,6 +32,7 @@ public final class EloBot {
             AddGameExport gameExport = new AddGameExport(database);
             handler.addCommand(gameExport);
             handler.addCommand(new ImportChannel(gameExport));
+            handler.addCommand(new RemoveGameExport(gameExport));
             handler.addCommand(new Rank(database));
             handler.addCommand(new Register(database));
             handler.addCommand(new DeletePlayer(database));
@@ -43,9 +44,6 @@ public final class EloBot {
             handler.addCommand(new Pardon(database));
             handler.addCommand(new Carry(database));
             handler.addCommand(new ForceRating(database));
-            handler.addCommand(new ActualMath(database));
-            handler.addCommand(new IdleDeviation(database));
-            handler.addCommand(new ForceDeviation(database));
         } catch (LoginException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

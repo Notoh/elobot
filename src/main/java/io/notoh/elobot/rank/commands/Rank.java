@@ -33,14 +33,9 @@ public class Rank extends Command {
             return;
         }
 
-        if(player.isProvisional()) {
-            msg.getChannel().sendMessage(name + " is still in placements. RD/σ = " + Util.DECIMAL_FORMAT.format(player.getDeviation()) + "/" + Util.DECIMAL_FORMAT.format(player.getVolatility())).queue();
-            return;
-        }
-
         List<PlayerWrapper> players = database.getSortedPlayers();
         int rank = players.indexOf(player) + 1;
-        int rating = (int) Math.round(player.getRating());
+        int rating = player.getRating();
 
         msg.getChannel().sendMessage(name + " has rank " + rank + " with a rating of " + rating + " with a" +
                 " KDA of " + Util.DECIMAL_FORMAT.format(player.getKDA()) + " and a W/L of " + player.getWins() + "/" + player.getLosses() + " (" + Util.DECIMAL_FORMAT.format(player.getWinPct()*100) + "%)").queue();

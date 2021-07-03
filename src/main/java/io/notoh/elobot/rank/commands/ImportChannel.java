@@ -47,7 +47,7 @@ public class ImportChannel extends Command {
                 continue;
             }
             msg.getChannel().sendMessage("Message id loaded " + message.getId()).queue();
-            if(!addGameExport.execute(message.getContentRaw().replace("`", "").split("\\s+"), msg.getChannel())) {
+            if(!addGameExport.execute(message.getContentRaw().replace("`", "").split("\\s+"), msg.getChannel(), false)) {
                 break;
             }
         }
