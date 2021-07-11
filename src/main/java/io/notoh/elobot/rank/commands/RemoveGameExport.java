@@ -17,6 +17,7 @@ public class RemoveGameExport extends Command {
         if(!checkPermission(msg.getMember())) {
             msg.getChannel().sendMessage("No permission!").queue();
         }
+        msg.getChannel().sendMessage("WARNING: THIS COMMAND DOES NOT WORK PROPERLY ON PLAYERS WITH GAMES >100").queue();
         addGameExport.execute(getArguments(msg), msg.getChannel(), true);
     }
 }
