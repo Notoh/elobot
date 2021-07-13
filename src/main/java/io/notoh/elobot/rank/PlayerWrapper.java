@@ -88,7 +88,7 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
             return;
         }
 
-        this.rating = 1500 + (rawRating + cozyElo) * (100 / wins + losses);
+        this.rating = 1500 + (rawRating + cozyElo) * (100 / (wins + losses));
 
         rawRating += cozyElo;
     }
@@ -99,6 +99,9 @@ public class PlayerWrapper implements Comparable<PlayerWrapper> {
         } else {
             losses--;
         }
+        this.kills -= kills;
+        this.deaths -= deaths;
+
         int cozyElo = (kills-deaths) + (won ? 12 : -12);
         rating -= cozyElo;
         rawRating -= cozyElo;
